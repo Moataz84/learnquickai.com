@@ -1,0 +1,23 @@
+"use client"
+import { Button } from "@/components/ui/button"
+import createCheckout from "@/actions/checkout"
+import { redirect } from "next/navigation"
+import Link from "next/link"
+
+export default function PricingButton({ children, email, active, id, className }) {
+  if (active === null) return <Link href="/auth/login"><Button className={className}>{children}</Button></Link>
+  if (active) return <Link href={`https://billing.stripe.com/p/login/test_cN28AmalMegieac4gg?prefilled_email=${email}`}><Button className={className}>{children}</Button></Link>
+console.log(id)
+  async function handleClick() {
+    if (id === "year") {
+      const url = await createCheckout(email, "price_1RPAlx4fERSy0thU9aydx6CO")
+      return redirect(url)
+    }
+    const url = await createCheckout(email, "price_1RPAkg4fERSy0thUD0tQy5XE")
+    redirect(url)
+  }
+  
+  return (
+    <Button className={className} id={id} onClick={handleClick}>{children}</Button>
+  )
+}
