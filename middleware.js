@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth"
 import connectDB from "@/utils/db"*/
 
 export async function middleware(request) {
+  return NextResponse.next()
   const base = new URL(request.url)
   if (request.method === "POST" || base.pathname.includes("/api/")) {
     if (request.headers.get("sec-fetch-site") !== "same-origin") 
@@ -12,8 +13,8 @@ export async function middleware(request) {
     return NextResponse.next()
   }
 
-  /*const session = await getServerSession(authConfig)
-  const id = session?.user?.id
+  
+  /*
   await connectDB()
   const user = await Users.findOne({_id: id})*/
 
