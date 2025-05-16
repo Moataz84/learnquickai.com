@@ -10,10 +10,10 @@ export default function PricingButton({ children, email, active, id, className }
 
   async function handleClick() {
     if (id === "year") {
-      const url = await createCheckout(email, "price_1RPUuh4fERSy0thU5kJPKD74")
+      const url = await createCheckout(email, "price_1RPR2rG2GpyU7y3qPwmDkOnj")
       return redirect(url)
     }
-    const url = await createCheckout(email, "price_1RPUu64fERSy0thUndX05Qig")
+    const url = await createCheckout(email, "price_1RPR2DG2GpyU7y3qEB6WHIf1")
     redirect(url)
   }
   

@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function PricingPage() {
   const user = await getUser()
-  console.log(process.env.STRIPE_SECRET_KEY)
+
   return (
   <>
     <Menu />    
