@@ -7,13 +7,13 @@ import Link from "next/link"
 export default function PricingButton({ children, email, active, id, className }) {
   if (active === null) return <Link href="/auth/login"><Button className={className}>{children}</Button></Link>
   if (active) return <Link href={`https://billing.stripe.com/p/login/test_cN28AmalMegieac4gg?prefilled_email=${email}`}><Button className={className}>{children}</Button></Link>
-console.log(id)
+
   async function handleClick() {
     if (id === "year") {
-      const url = await createCheckout(email, "price_1RPAlx4fERSy0thU9aydx6CO")
+      const url = await createCheckout(email, "price_1RPR2rG2GpyU7y3qPwmDkOnj")
       return redirect(url)
     }
-    const url = await createCheckout(email, "price_1RPAkg4fERSy0thUD0tQy5XE")
+    const url = await createCheckout(email, "price_1RPR2DG2GpyU7y3qEB6WHIf1")
     redirect(url)
   }
   
