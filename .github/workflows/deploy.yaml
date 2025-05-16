@@ -17,5 +17,7 @@ jobs:
           port: 22
           script: |
             cd ~/sites/learnquickai.com
+            eval `ssh-agent -s`
+            ssh-add /home/moataz/.ssh/id_github
             git pull origin main
             pm2 restart site
