@@ -14,7 +14,7 @@ export default function HomePage() {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl">
             Supercharge your learning with powerful tools like smart notes, flashcards, quizzes, and more.
           </p>
-          <Link href="/pricing" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md transition duration-200 cursor-pointer">
+          <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md transition duration-200 cursor-pointer">
             Get Started
           </Link>
         </section>
