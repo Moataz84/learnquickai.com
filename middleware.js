@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-/*import Users from "@/utils/Models/Users"
+import Users from "@/utils/Models/Users"
 import { authConfig } from "@/utils/auth"
 import { getServerSession } from "next-auth"
-import connectDB from "@/utils/db"*/
+import connectDB from "@/utils/db"
 
 export async function middleware(request) {
-  return NextResponse.next()
   const base = new URL(request.url)
   if (request.method === "POST" || base.pathname.includes("/api/")) {
     if (request.headers.get("sec-fetch-site") !== "same-origin") 
@@ -13,10 +12,10 @@ export async function middleware(request) {
     return NextResponse.next()
   }
 
-  
-  /*
+  const session = await getServerSession(authConfig)
+  const id = session?.user?.id
   await connectDB()
-  const user = await Users.findOne({_id: id})*/
+  const user = await Users.findOne({_id: id})
 
   if (!session) {
     if (["/dashboard", "/notes", "/account", "/auth/verify", "/auth/resend-code"].includes(base.pathname)) {
@@ -47,5 +46,6 @@ export const config = {
     "/dashboard",
     "/notes/:path*",
     "/api/stream"
-  ]
+  ], 
+  runtime: "nodejs"
 }
