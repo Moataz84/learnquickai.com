@@ -1,41 +1,50 @@
-import { NextResponse } from "next/server"
-import { headers } from "next/headers"
-import Stripe from "stripe"
-import Users from "@/utils/Models/Users"
+// app/api/webhook/route.ts
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
+import { headers } from "next/headers";
+import { Users } from "@/models/User"; // adjust this import to your structure
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const config = {
+  api: {
+    bodyParser: false, // ⛔ important
+  },
+};
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(req) {
-  const body = await req.text()
-  const h = await headers()
-  const signature = h.get("stripe-signature")
+  const rawBody = await req.arrayBuffer();
+  const body = Buffer.from(rawBody);
+  const sig = headers().get("stripe-signature");
 
-  let data
-  let eventType
-  let event
+  let event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
-    console.error(`Webhook signature verification failed. ${err.message}`)
-    return NextResponse.json({error: err.message}, {status: 400})
+    console.error("❌ Stripe webhook signature verification failed:", err.message);
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  data = event.data
-  eventType = event.type
+
+  const data = event.data.object;
+  const eventType = event.type;
 
   try {
     if (eventType === "checkout.session.completed") {
-      await Users.findOneAndUpdate({email: data.object.customer_details.email}, {$set: {active: true}})
+      await Users.findOneAndUpdate(
+        { email: data.customer_details.email },
+        { $set: { active: true } }
+      );
     } else if (eventType === "customer.subscription.deleted") {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-      const customer = await stripe.customers.retrieve(data.object.customer)
-      const email = customer.email
-      await Users.findOneAndUpdate({email}, {$set: {active: false}})
-    } else {}
-  } catch (e) {
-    console.log(e)
+      const customer = await stripe.customers.retrieve(data.customer);
+      const email = (customer).email;
+      await Users.findOneAndUpdate({ email }, { $set: { active: false } });
+    }
+  } catch (err) {
+    console.error("Error handling webhook:", err);
   }
 
-  return NextResponse.json({})
+  return NextResponse.json({ received: true });
 }

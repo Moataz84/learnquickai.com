@@ -1,0 +1,21 @@
+name: Deploy to server
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          port: 22
+          script: |
+            cd ~/sites/learnquickai.com
+            git pull origin main
+            pm2 restart site

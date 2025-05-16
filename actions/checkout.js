@@ -9,8 +9,8 @@ export default async function createCheckout(email, priceId) {
     mode: "subscription",
     customer_email: email,
     line_items: [{price: priceId, quantity: 1}],
-    success_url: "http://localhost:3000/dashboard",
-    cancel_url: "http://localhost:3000/pricing"
+    success_url: "https://learnquickai.com/dashboard",
+    cancel_url: "https://learnquickai.com/pricing"
   })
   return checkoutSession.url
 }
