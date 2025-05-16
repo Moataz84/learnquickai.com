@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { Users } from "@/models/User"; // adjust this import to your structure
+import Users from "@/utils/Models/Users"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
