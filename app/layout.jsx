@@ -5,7 +5,7 @@ import "@/app/globals.css"
 export const metadata = {
   title: "Home",
   icons: {
-    icon: "/logo-black.png",
+    icon: "/favicon.png",
   }
 }
 
