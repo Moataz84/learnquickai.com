@@ -3,3 +3,4 @@ node_modules/
 .env.local
 test/
 package-lock.json
+credentials.txt

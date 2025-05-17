@@ -26,7 +26,7 @@ export default function MenuClient({ isDarkMode, user }) {
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300 sticky top-0">
       {/* Left: Logo */}
-      <Logo />
+      <Logo isDarkMode={darkMode} />
 
       {/* Middle: Navigation Links */}
       <nav className="flex items-center gap-4 ml-auto">

@@ -51,7 +51,6 @@ export async function POST(req) {
   </style>
 </head>
 <body>
-<div class="container">
   <div class="container">
     <h1>😔 Sorry to See You Go</h1>
     <p>Hi ${name},</p>
@@ -68,7 +67,6 @@ export async function POST(req) {
     <div class="footer">
       This is an automated message from LearnQuick AI.
     </div>
-  </div>
 </body>
 </html>
 `

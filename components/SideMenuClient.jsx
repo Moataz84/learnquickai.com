@@ -48,14 +48,14 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
 
   return (
     <div
-      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-75"} ${!darkMode ? "border-gray-300" : "border-gray-700"}`}
+      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-69"} ${!darkMode ? "border-gray-300" : "border-gray-700"}`}
     >
       {/* Header */}
       <div className="flex items-center justify-center mb-6">
         <div
           className={`overflow-hidden transition-all duration-500 ${collapsed ? "w-0" : "w-full"}`}
         >
-          <Logo />
+          <Logo isDarkMode={darkMode} />
         </div>
         <button onClick={() => setCollapsed(!collapsed)} aria-label="Toggle Sidebar" className="cursor-pointer px-2">
           {collapsed ? <FaBars size={24} /> : <CollapseIcon flipped />}
