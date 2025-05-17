@@ -3,6 +3,7 @@ import { cookies } from "next/headers"
 import "@/app/globals.css"
 
 export const metadata = {
+  title: "Home",
   icons: {
     icon: "/favicon.png",
   }
