@@ -3,6 +3,7 @@ import { useState } from "react"
 import { FaMoon, FaSun } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Logo from "@/components/Logo"
 
 const setCookie = (name, value, days) => {
   const date = new Date()
@@ -25,9 +26,7 @@ export default function MenuClient({ isDarkMode, user }) {
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300 sticky top-0">
       {/* Left: Logo */}
-      <Link href="/" className="text-lg font-semibold text-gray-800 dark:text-white">
-        LearnQuickAI
-      </Link>
+      <Logo />
 
       {/* Middle: Navigation Links */}
       <nav className="flex items-center gap-4 ml-auto">

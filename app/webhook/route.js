@@ -55,7 +55,7 @@ export async function POST(req) {
   <div class="container">
     <h1>😔 Sorry to See You Go</h1>
     <p>Hi ${name},</p>
-    <p>We're sorry to hear that you've canceled your subscription to <strong>Learn Quick AI Pro</strong>.</p>
+    <p>We're sorry to hear that you've canceled your subscription to <strong>LearnQuick AI Pro</strong>.</p>
 
     <p>We truly appreciate you being a part of our journey and hope you found value in the tools and resources we offered.</p>
 
@@ -95,7 +95,7 @@ export async function POST(req) {
 
   <p><strong>Order Summary:</strong></p>
   <ul>
-    <li>Plan: <strong>Learn Quick AI Pro</strong></li>
+    <li>Plan: <strong>LearnQuick AI Pro</strong></li>
   </ul>
 
   <p>You can access your account and benefits at any time by logging in.</p>

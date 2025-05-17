@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function PricingButton({ children, email, active, id, className }) {
   if (active === null) return <Link href="/auth/login"><Button className={className}>{children}</Button></Link>
-  if (active) return <Link href={`https://billing.stripe.com/p/login/test_cN28AmalMegieac4gg?prefilled_email=${email}`}><Button className={className}>{children}</Button></Link>
+  if (active) return <Link href={`https://billing.stripe.com/p/login/6oUcN5ciMcu78fAbBcaVa00?prefilled_email=${email}`}><Button className={className}>{children}</Button></Link>
 
   async function handleClick() {
     if (id === "year") {

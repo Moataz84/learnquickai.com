@@ -38,7 +38,8 @@ export async function checkYTVideo(url) {
       new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: true}).save()
     ])
     return {msg: "success", promptId}
-  } catch {
+  } catch (e) {
+    console.log(e)
     return {msg: "This video is unavailable"}
   }
 }
@@ -51,6 +52,7 @@ export async function uploadYoutubeVideo(promptId, url) {
       if (transcript.length === 0) throw Error("")
       await generateData(promptId, transcript)
     } catch (e) {
+      console.log(e)
       const videoId = randomBytes(8).toString("hex")
       const videoPath = join(process.cwd(), "temp", videoId + ".mp3")
       await youtubeDl(url, {

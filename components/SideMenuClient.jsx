@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { MdDashboard, MdEditNote } from "react-icons/md"
 import { FaMoon, FaSun, FaBars, FaUser, FaSignOutAlt, FaClone, FaCog, FaGamepad } from "react-icons/fa"
 import { FaNoteSticky } from "react-icons/fa6"
+import Logo from "@/components/Logo"
 
 export default function SideMenuClient({ isDarkMode, promptId }) {
 
@@ -47,16 +48,14 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
 
   return (
     <div
-      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-64"} ${!darkMode ? "border-gray-300" : "border-gray-700"}`}
+      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-75"} ${!darkMode ? "border-gray-300" : "border-gray-700"}`}
     >
       {/* Header */}
       <div className="flex items-center justify-center mb-6">
         <div
           className={`overflow-hidden transition-all duration-500 ${collapsed ? "w-0" : "w-full"}`}
         >
-          <Link href="/">
-            <h1 className="text-2xl font-bold whitespace-nowrap inline-block">LearnQuickAI</h1>
-          </Link>
+          <Logo />
         </div>
         <button onClick={() => setCollapsed(!collapsed)} aria-label="Toggle Sidebar" className="cursor-pointer px-2">
           {collapsed ? <FaBars size={24} /> : <CollapseIcon flipped />}

@@ -13,7 +13,7 @@ const transporter = createTransport({
 
 export default async function sendEmail(recipent, subject, body) {
   const mailOptions = {
-    from: '"LearnQuickAI" <support@learnquickai.com',
+    from: '"LearnQuick AI" <support@learnquickai.com',
     to: recipent,
     subject,
     text: body
@@ -27,7 +27,7 @@ export default async function sendEmail(recipent, subject, body) {
 
 export async function sendHTMLEmail(recipent, subject, html) {
   const mailOptions = {
-    from: '"LearnQuickAI" <support@learnquickai.com',
+    from: '"LearnQuick AI" <support@learnquickai.com',
     to: recipent,
     subject,
     html

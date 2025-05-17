@@ -57,7 +57,7 @@ export default function HomePage() {
         {/* Footer */}
         <footer className="text-center text-sm text-gray-600 dark:text-gray-400 py-6 px-4 border-t border-gray-200 dark:border-gray-700">
           <p>
-            © {new Date().getFullYear()} LearnQuickAI —{" "}
+            © {new Date().getFullYear()} LearnQuick AI —{" "}
             <Link href="/terms-of-service" className="underline hover:text-blue-600">
               Terms of Service
             </Link>

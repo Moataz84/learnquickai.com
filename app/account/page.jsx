@@ -45,7 +45,7 @@ export default async function AccountPage() {
             <div className="border border-border p-4 rounded-lg text-left bg-white dark:bg-gray-800">
               <h2 className="text-lg font-semibold mb-2 text-foreground">Billing</h2>
               <Link
-                href={`https://billing.stripe.com/p/login/test_cN28AmalMegieac4gg?prefilled_email=${user.email}`}
+                href={`https://billing.stripe.com/p/login/6oUcN5ciMcu78fAbBcaVa00?prefilled_email=${user.email}`}
                 className="text-sm underline text-primary hover:opacity-80"
               >
                 Go to Billing & Payments
