@@ -73,7 +73,7 @@ export async function POST(req) {
 </html>
 `
       await sendHTMLEmail(email, "Sorry to See You Go", message)
-    } else if (eventType === 'invoice.payment_succeeded') {
+    } else if (eventType === "invoice.payment_succeeded") {
       const name = data.customer_name
       const email = data.customer_email
       const invoiceUrl = data.hosted_invoice_url

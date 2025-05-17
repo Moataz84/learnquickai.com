@@ -5,7 +5,7 @@ export default function Logo() {
     <Link href="/" className="flex justify-center items-center gap-2">
       <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
        viewBox="0 0 110.000000 110"
-       preserveAspectRatio="xMidYMid meet" className="bg-white fill-gray-800 stroke-gray-800 h-fit w-8 shrink-0">
+       preserveAspectRatio="xMidYMid meet" className="bg-black stroke-white fill-white dark:bg-white dark:fill-gray-800 dark:stroke-gray-800 h-fit w-8 shrink-0">
       
       <g transform="translate(0.000000,110.000000) scale(0.100000,-0.100000)">
       <path d="M0 580 l0 -580 550 0 550 0 0 580 0 580 -550 0 -550 0 0 -580z m764
@@ -24,7 +24,7 @@ export default function Logo() {
       -85 41 c-215 105 -324 154 -339 154 -9 -1 -105 -43 -214 -94z"/>
       </g>
       </svg>
-      <h1 className="text-2xl font-bold whitespace-nowrap inline-block font-(family-name:--font-fira-code)">LearnQuick AI</h1>
+      <h1 className="text-2xl font-bold whitespace-nowrap inline-block">LearnQuick AI</h1>
     </Link>
   )
 }
