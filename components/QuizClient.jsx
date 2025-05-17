@@ -23,7 +23,6 @@ function shuffleQuestions(questions) {
 }
 
 export default function QuizClient({ promptId, questions }) {
-
   const [quizData, setQuizData] = useState(questions)
   const [isQuizStarted, setIsQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -91,10 +90,10 @@ export default function QuizClient({ promptId, questions }) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full p-12 bg-gray-900 space-y-6 items-center">
+    <div className="flex flex-col min-h-screen w-full p-12 bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 items-center">
       {!isQuizStarted ? (
         <>
-          <h2 className="text-3xl font-bold text-white text-center mt-8">
+          <h2 className="text-3xl font-bold text-center mt-8">
             Generate Your Quiz or Start Interactive Quiz
           </h2>
           <div className="flex space-x-6 mt-6 justify-center">
@@ -117,7 +116,7 @@ export default function QuizClient({ promptId, questions }) {
             </button>
           </div>
           {isLoading && (
-            <div className="text-white text-lg mt-4">Loading quiz questions...</div>
+            <div className="text-lg mt-4">Loading quiz questions...</div>
           )}
         </>
       ) : (
@@ -125,7 +124,7 @@ export default function QuizClient({ promptId, questions }) {
           {quizStatus ? (
             <div className="text-lg font-semibold text-green-500">
               {quizStatus}
-              <div className="mt-4 text-white">
+              <div className="mt-4">
                 Your total score is: {correctAnswersCount} / {quizData.length}
               </div>
               <button
@@ -136,9 +135,9 @@ export default function QuizClient({ promptId, questions }) {
               </button>
             </div>
           ) : (
-            <div className="w-[100%] max-w-2xl">
+            <div className="w-full max-w-2xl">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-white">
+                <h2 className="text-2xl font-semibold">
                   Question {currentQuestionIndex + 1} / {quizData.length}
                 </h2>
                 <button
@@ -148,7 +147,7 @@ export default function QuizClient({ promptId, questions }) {
                   End Quiz
                 </button>
               </div>
-              <div className="text-xl text-white mt-4 h-16 overflow-hidden">
+              <div className="text-xl mt-4 h-16 overflow-hidden">
                 <MathJaxContext>
                   <MathJax inline dynamic>
                     <ReactMarkdown>{quizData[currentQuestionIndex].question}</ReactMarkdown>
@@ -165,7 +164,7 @@ export default function QuizClient({ promptId, questions }) {
                     <button
                       key={option.id}
                       onClick={() => handleAnswer(option.id)}
-                      className={`bg-gray-700 text-white w-full py-4 text-lg rounded-lg hover:bg-gray-600 transition cursor-pointer ${
+                      className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white w-full py-4 text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer ${
                         isCorrect ? "border-4 border-green-500 animate-pulse" : ""
                       } ${isWrong ? "border-4 border-red-500 animate-pulse" : ""}`}
                       style={{ minHeight: "60px" }}
@@ -183,7 +182,7 @@ export default function QuizClient({ promptId, questions }) {
                 <button
                   onClick={handlePrevQuestion}
                   disabled={currentQuestionIndex === 0}
-                  className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-500 disabled:opacity-50 cursor-pointer flex items-center"
+                  className="bg-gray-300 dark:bg-gray-600 text-black dark:text-white px-6 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 disabled:opacity-50 cursor-pointer flex items-center"
                 >
                   <FaArrowLeft className="mr-2" />
                   Previous

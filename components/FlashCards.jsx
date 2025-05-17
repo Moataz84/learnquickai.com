@@ -59,13 +59,13 @@ export default function FlashcardUI({ flashCardsData, promptId }) {
 
       {!flashCards?.length || !currentCard ? (
         <div className="flex flex-col items-center justify-center space-y-6">
-          <Button
+          <button
             onClick={handleGenerateFlashcards}
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg disabled:opacity-50 cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg disabled:opacity-50 cursor-pointer "
           >
             {isLoading ? "Generating..." : "Generate Flashcards"}
-          </Button>
+          </button>
         </div>
       ) : (
         <>

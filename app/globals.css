@@ -168,10 +168,6 @@ body {
   margin-bottom: 2rem;
 }
 
-.custom-html-styles li > p {
-  font-size: 1.5rem;
-}
-
 .custom-html-styles h2,
 .custom-html-styles h3,
 .custom-html-styles h4 {
@@ -197,7 +193,7 @@ body {
   margin-top: 1rem;
   margin-bottom: 1rem;
   padding-left: 2rem;
-  list-style: inside; /* ensures bullets/numbers show */
+  list-style: disc;
 }
 
 .custom-html-styles > ul:not(:last-of-type) > li {
