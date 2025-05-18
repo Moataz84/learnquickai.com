@@ -104,6 +104,7 @@ async function getCaptions(url) {
 
       return content
     } catch (e) {
+      console.log(e)
     }
   }
   return null
@@ -119,6 +120,8 @@ async function downloadVideo(url) {
       )
       return {videoId, videoPath: outputTemplate}
     } catch (e) {
+            console.log(e)
+
       if (e.includes("format is not available")) return null
     }
   }
@@ -128,7 +131,6 @@ async function downloadVideo(url) {
 export async function uploadYoutubeVideo(promptId, url) {
   try {
     const transcript = await getCaptions(url)
-    
     if (!transcript) {
       const r = await downloadVideo(url)
       if (!r) {
@@ -141,6 +143,8 @@ export async function uploadYoutubeVideo(promptId, url) {
     }
     await generateData(promptId, transcript)
   } catch {
+          console.log(e)
+
     await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
   }
 }
