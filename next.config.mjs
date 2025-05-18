@@ -7,7 +7,7 @@ const nextConfig = {
       bodySizeLimit: "5mb",
     }
   },
-  serverExternalPackages: ["youtube-dl-exec", "fluent-ffmpeg", "ffmpeg-static", "ffprobe-static"]
+  serverExternalPackages: ["fluent-ffmpeg", "ffmpeg-static", "ffprobe-static"]
 };
 
 export default nextConfig;

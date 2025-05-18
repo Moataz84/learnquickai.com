@@ -1,5 +1,6 @@
 import { authConfig } from "@/utils/auth"
 import Messages from "@/utils/Models/Messages"
+import Prompts from "@/utils/Models/Prompts"
 import { getServerSession } from "next-auth"
 import OpenAI from "openai"
 
@@ -24,6 +25,9 @@ export async function GET(req) {
     role: "user",
     content: message,
   }).save()
+  
+  const prompt = await Prompts.findOne({promptId})
+  const summary = prompt.summary
 
   const encoder = new TextEncoder()
 
@@ -35,7 +39,7 @@ export async function GET(req) {
         const completion = await openai.chat.completions.create(
           {
             model: "gpt-4o-mini",
-            messages: [{ role: "user", content: message }],
+            messages: [{ role: "user", content: `Answer this question ${message}. Reference this summary when relevant ${summary}.` }],
             stream: true,
           },
           { responseType: "stream" }

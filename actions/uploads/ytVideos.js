@@ -1,9 +1,6 @@
 "use server"
 import { randomBytes } from "crypto"
 import { join } from "path"
-import { setFfmpegPath, setFfprobePath } from "fluent-ffmpeg"
-import ffmpegPath from "ffmpeg-static"
-import ffprobePath from "ffprobe-static"
 import getUsage from "@/actions/getUsage"
 import { getServerSession } from "next-auth"
 import { authConfig } from "@/utils/auth"
@@ -11,13 +8,33 @@ import Users from "@/utils/Models/Users"
 import Usages from "@/utils/Models/Usages"
 import { v4 } from "uuid"
 import Prompts from "@/utils/Models/Prompts"
-import { YoutubeTranscript } from "youtube-transcript"
-import { getBasicInfo } from "ytdl-core"
-import youtubeDl from "youtube-dl-exec"
 import { generateData, generateTranscriptAndData } from "@/actions/uploads/generateData"
+import { URL } from "url"
+import { exec } from "child_process"
+import { readdirSync, readFileSync, unlinkSync } from "fs"
 
-setFfmpegPath(ffmpegPath)
-setFfprobePath(ffprobePath.path)
+const proxies = [
+  "http://fujfdpql:t3y6r0q84972@104.253.199.219:5498",
+  "http://fujfdpql:t3y6r0q84972@130.180.233.163:7734",
+  "http://fujfdpql:t3y6r0q84972@82.29.143.115:7829",
+  "http://fujfdpql:t3y6r0q84972@46.203.161.140:5637",
+  "http://fujfdpql:t3y6r0q84972@46.203.29.147:6634",
+  "http://fujfdpql:t3y6r0q84972@104.252.59.174:7646",
+  "http://fujfdpql:t3y6r0q84972@72.46.138.83:6309",
+  "http://fujfdpql:t3y6r0q84972@166.0.42.40:6048",
+  "http://fujfdpql:t3y6r0q84972@154.194.27.17:6557",
+  "http://fujfdpql:t3y6r0q84972@45.196.60.149:6489",
+  "http://fujfdpql:t3y6r0q84972@63.141.62.193:6486",
+]
+
+function iso8601DurationToSeconds(duration) {
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!match) return 0
+  const hours = parseInt(match[1]) || 0
+  const minutes = parseInt(match[2]) || 0
+  const seconds = parseInt(match[3]) || 0
+  return hours * 3600 + minutes * 60 + seconds
+}
 
 export async function checkYTVideo(url) {
   const session = await getServerSession(authConfig)
@@ -26,16 +43,20 @@ export async function checkYTVideo(url) {
   const user = await Users.findOne({_id: id})
 
   try {
-    const info = await getBasicInfo(url)
-    const length = info.videoDetails.lengthSeconds
-    const totalTime = parseFloat(length) + usage
+    const u = new URL(url)
+    const req = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${u.searchParams.get("v")}&key=${process.env.GOOGLE_API}`)
+    const data = await req.json()
+    const duration = data.items[0]?.contentDetails?.duration
+    if (!duration) return {msg: "This video is unavailable"}
+    const length = iso8601DurationToSeconds(duration)
+    const totalTime = length + usage
     if (!user.active && totalTime > 3600) {
       return {msg: "exceeded"}
     }
     const promptId = v4()
     await Promise.all([
       new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false}).save(),
-      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: true}).save()
+      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: false}).save()
     ])
     return {msg: "success", promptId}
   } catch (e) {
@@ -43,28 +64,82 @@ export async function checkYTVideo(url) {
     return {msg: "This video is unavailable"}
   }
 }
+///////////////////////////////
+function execPromise(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) reject(error)
+      else if (stderr) reject(stderr)
+      else resolve(stdout)
+    })
+  })
+}
+
+async function getCaptions(url) {
+  const videoId = randomBytes(8).toString("hex")
+  const outputTemplate = join(process.cwd(), "temp", `${videoId}.%(ext)s`)
+  for (const proxy of proxies) {
+    try {
+      await execPromise(
+        `yt-dlp --proxy "${proxy}" --write-auto-subs --sub-lang "en" -o "${outputTemplate}" --skip-download ${url}`
+      )
+      const dir = join(process.cwd(), "temp", videoId)
+      const matchedFiles = readdirSync(dir, {withFileTypes: true}).filter(file => file.isFile() && file.name.includes(videoId)).map(file => join(dir, file.name))
+      if (matchedFiles.length === 0) return null
+
+      const subtitleFile = matchedFiles[0]
+      let content = readFileSync(subtitleFile, "utf-8")
+
+      content = content
+        .replace(/^\d{2}:\d{2}:\d{2}\.\d{3} --> .*$/gm, '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/^\s*$/gm, '')
+        .split('\n')
+        .map(line => line.trim())
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+      unlinkSync(subtitleFile)
+
+      return content
+    } catch (e) {
+    }
+  }
+  return null
+}
+
+async function downloadVideo(url) {
+  const videoId = randomBytes(8).toString("hex")
+  const outputTemplate = join(process.cwd(), "temp", `${videoId}.%(ext)s`)
+  for (const proxy of proxies) {
+    try {
+      await execPromise(
+        `yt-dlp --proxy "${proxy}" -f "bestaudio[ext=m4a]" -o "${outputTemplate}" ${url}`
+      )
+      return {videoId, videoPath: outputTemplate}
+    } catch (e) {
+      if (e.includes("format is not available")) return null
+    }
+  }
+  return null
+}
 
 export async function uploadYoutubeVideo(promptId, url) {
   try {
-    try {
-      const result = await YoutubeTranscript.fetchTranscript(url)
-      const transcript = result.map(part => part.text).toString()
-      if (transcript.length === 0) throw Error("")
-      await generateData(promptId, transcript)
-    } catch (e) {
-      console.log(e)
-      const videoId = randomBytes(8).toString("hex")
-      const videoPath = join(process.cwd(), "temp", videoId + ".mp3")
-      await youtubeDl(url, {
-        extractAudio: true,
-        output: videoPath,
-        audioFormat: "mp3",
-        preferFreeFormats: true,
-        ffmpegLocation: ffmpegPath
-      })
-      await generateTranscriptAndData(promptId, videoPath, videoId)
+    const transcript = await getCaptions(url)
+    
+    if (!transcript) {
+      const r = await downloadVideo(url)
+      if (!r) {
+        await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
+        return
+      }
+      await generateTranscriptAndData(promptId, r.videoPath, r.videoId)
       await Usages.findOneAndUpdate({promptId}, {$set: {paidFor: true}})
+      return
     }
+    await generateData(promptId, transcript)
   } catch {
     await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
   }
