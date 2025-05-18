@@ -116,12 +116,11 @@ async function downloadVideo(url) {
   for (const proxy of proxies) {
     try {
       await execPromise(
-        `yt-dlp --proxy "${proxy}" -f "bestaudio[ext=m4a]" -o "${outputTemplate}" ${url}`
+        `yt-dlp --proxy "${proxy}" -f "bestaudio[ext=m4a]" -o "${outputTemplate}" --extract-audio --audio-format mp3 ${url}`
       )
       return {videoId, videoPath: outputTemplate}
     } catch (e) {
-            console.log(e)
-
+      console.log(e)
       if (e.includes("format is not available")) return null
     }
   }
@@ -143,8 +142,7 @@ export async function uploadYoutubeVideo(promptId, url) {
     }
     await generateData(promptId, transcript)
   } catch {
-          console.log(e)
-
+    console.log(e)
     await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
   }
 }
