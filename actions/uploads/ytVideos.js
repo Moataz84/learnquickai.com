@@ -83,7 +83,7 @@ async function getCaptions(url) {
       await execPromise(
         `yt-dlp --proxy "${proxy}" --write-auto-subs --sub-lang "en" -o "${outputTemplate}" --skip-download ${url}`
       )
-      const dir = join(process.cwd(), "temp", videoId)
+      const dir = join(process.cwd(), "temp")
       const matchedFiles = readdirSync(dir, {withFileTypes: true}).filter(file => file.isFile() && file.name.includes(videoId)).map(file => join(dir, file.name))
       if (matchedFiles.length === 0) return null
 
