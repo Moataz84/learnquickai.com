@@ -62,7 +62,8 @@ async function transcribeChunk(filePath) {
       model: "gpt-4o-mini-transcribe"
     })
     return response.text
-  } catch (err) {
+  } catch (e) {
+    console.log(e)
     return ""
   }
 }
