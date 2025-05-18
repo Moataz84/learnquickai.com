@@ -132,6 +132,7 @@ export async function uploadYoutubeVideo(promptId, url) {
     const transcript = await getCaptions(url)
     if (!transcript) {
       const r = await downloadVideo(url)
+      console.log(transcript, r)
       if (!r) {
         await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
         return
