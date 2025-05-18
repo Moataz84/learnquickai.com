@@ -116,9 +116,9 @@ async function downloadVideo(url) {
   for (const proxy of proxies) {
     try {
       await execPromise(
-        `yt-dlp --proxy "${proxy}" -f "bestaudio[ext=m4a]" -o "${outputTemplate}" --extract-audio --audio-format mp3 ${url}`
+        `yt-dlp --proxy "${proxy}" -f worstaudio -o "${outputTemplate}" --extract-audio --audio-format mp3 ${url}`
       )
-      return {videoId, videoPath: outputTemplate}
+      return {videoId, videoPath: join(process.cwd(), "temp", `${videoId}.mp3`)}
     } catch (e) {
       console.log(e)
       if (e.includes("format is not available")) return null
