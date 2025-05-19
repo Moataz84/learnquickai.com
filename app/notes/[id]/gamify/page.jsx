@@ -1,9 +1,9 @@
-import React from 'react'
+"use client"
 
-function page() {
+export default function GamePage() {
+
+
   return (
     <div>page</div>
   )
 }
-
-export default page

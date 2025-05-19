@@ -15,7 +15,7 @@ export default function YoutubeUpload({isDialogOpen, setIsDialogOpen, setModalEr
     const result = await checkYTVideo(youtubeLink)
     if (result.msg === "exceeded") return router.push("/pricing")
     if (result.msg === "success") {
-      uploadYoutubeVideo(result.promptId, youtubeLink)
+      uploadYoutubeVideo(result.promptId, `https://www.youtube.com/watch?v=${result.ytVideoId}`)
       return router.push(`/notes/${result.promptId}`)
     }
     setModalError(result.msg)

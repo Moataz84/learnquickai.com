@@ -19,7 +19,7 @@ const tips = [
 
 export default function PromptLoader({ number, children, userMessages }) {
   const pathname = usePathname()
-  const prompt = usePrompt()
+  const { prompt  }= usePrompt()
 
   const [loading, setLoading] = useState(prompt.summary === "")
   const [currentTip, setCurrentTip] = useState(tips[number])
@@ -50,7 +50,7 @@ export default function PromptLoader({ number, children, userMessages }) {
   if (!mounted) return null
 
   if (!loading) {
-    if (pathname.includes("settings")) return children
+    if (pathname.includes("settings") || pathname.includes("gamify")) return children
     return (
       <>
         {children}

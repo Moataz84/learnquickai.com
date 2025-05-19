@@ -8,7 +8,7 @@ import PromptLoader from "@/components/PromptLoader"
 import { PromptProvider } from "@/contexts/PromptContext"
 import getMessages from "@/actions/prompts/getMessages"
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }) {
   const { id } = await params

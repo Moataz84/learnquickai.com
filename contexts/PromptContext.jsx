@@ -26,7 +26,7 @@ export function PromptProvider({ initialPrompt, children }) {
   }, [prompt])
 
   return (
-    <PromptContext.Provider value={prompt}>
+    <PromptContext.Provider value={{prompt, setPrompt}}>
       {children}
     </PromptContext.Provider>
   )

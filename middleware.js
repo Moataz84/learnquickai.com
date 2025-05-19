@@ -24,7 +24,7 @@ export async function middleware(request) {
     return NextResponse.next()
   }
 
-  if (!user.verified) {
+  if (!user?.verified) {
     if (["/auth/verify", "/auth/resend-code"].includes(base.pathname)) {
       return NextResponse.next()
     }

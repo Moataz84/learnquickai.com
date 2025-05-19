@@ -36,6 +36,24 @@ function iso8601DurationToSeconds(duration) {
   return hours * 3600 + minutes * 60 + seconds
 }
 
+function getVideoIdFromUrl(url) {
+  try {
+    const parsed = new URL(url)
+
+    if (parsed.hostname.includes("youtube.com")) {
+      return parsed.searchParams.get("v")
+    }
+
+    if (parsed.hostname === "youtu.be") {
+      return parsed.pathname.split("/")[1]
+    }
+
+    return null
+  } catch (err) {
+    return null
+  }
+}
+
 export async function checkYTVideo(url) {
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
@@ -43,8 +61,8 @@ export async function checkYTVideo(url) {
   const user = await Users.findOne({_id: id})
 
   try {
-    const u = new URL(url)
-    const req = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${u.searchParams.get("v")}&key=${process.env.GOOGLE_API}`)
+    const videoId = getVideoIdFromUrl(url)
+    const req = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${process.env.GOOGLE_API}`)
     const data = await req.json()
     const duration = data.items[0]?.contentDetails?.duration
     if (!duration) return {msg: "This video is unavailable"}
@@ -58,7 +76,7 @@ export async function checkYTVideo(url) {
       new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false}).save(),
       new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: false}).save()
     ])
-    return {msg: "success", promptId}
+    return {msg: "success", promptId, ytVideoId: videoId}
   } catch (e) {
     console.log(e)
     return {msg: "This video is unavailable"}

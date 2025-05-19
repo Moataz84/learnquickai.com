@@ -1,5 +1,8 @@
 import Link from "next/link"
 import Menu from "@/components/Menu"
+import { FaClone, FaGamepad, FaLongArrowAltRight, FaYoutube } from "react-icons/fa"
+import { IoDocumentTextSharp } from "react-icons/io5";
+import { FaRobot } from "react-icons/fa6";
 
 export default function HomePage() {
   return (
@@ -7,19 +10,43 @@ export default function HomePage() {
       <Menu />
       <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
         {/* Hero Section */}
-        <section className="flex flex-col items-center justify-center text-center py-20 px-6 sm:px-10">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-            Learn at the <span className="text-blue-600 dark:text-blue-400">speed of light</span> 🚀
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl">
-            Supercharge your learning with powerful tools like smart notes, flashcards, quizzes, and more.
-          </p>
-          <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md transition duration-200 cursor-pointer">
-            Get Started
-          </Link>
+        <section className="flex flex-col-reverse lg:flex-row items-center justify-center text-center lg:text-left py-28 px-6 sm:px-14 gap-15">
+          {/* Text Content */}
+          <div className="lg:w">
+            <h1
+              className="text-6xl font-extrabold mb-6 text-center leading-tight drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]"
+            >
+              Learn at the <span className="text-blue-600 dark:text-blue-400 drop-shadow-[0_0_12px_rgba(96,165,250,0.8)]">Speed of Light</span>⚡
+            </h1>
+
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-xl mx-auto text-center">
+              Supercharge your learning with powerful tools like smart notes, flashcards, quizzes, and more.
+            </p>
+            <Link
+              href="/dashboard"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md transition duration-200 cursor-pointer block mx-auto w-fit"
+            >
+              Get Started
+            </Link>
+          </div>
+
+          {/* Video Player 
+          <div className="flex justify-center">
+            <div className="w-full max-w-md rounded-xl overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.6)]">
+              <video
+                src="/demo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>*/}
         </section>
 
-        {/* Testimonials */}
+
+        {/* Testimonials 
         <section className="bg-gray-100 dark:bg-gray-800 py-16 px-6">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-10">What learners are saying</h2>
@@ -35,7 +62,7 @@ export default function HomePage() {
                 },
                 {
                   name: "Morgan K.",
-                  quote: "It’s like having a tutor in my pocket. The chatbot is incredibly smart.",
+                  quote: "It's like having a tutor in my pocket. The chatbot is incredibly smart.",
                 },
                 {
                   name: "Riley M.",
@@ -52,7 +79,51 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-        </section>
+        </section>*/}
+
+{/* Features Section */}
+<section className="py-20 px-6 bg-white dark:bg-gray-900 text-center">
+  <div className="max-w-5xl mx-auto">
+    <h2 className="text-3xl font-bold mb-10">Why Choose LearnQuick AI?</h2>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
+      {[
+        {
+          title: "Instant Video Notes",
+          description: "Upload a video or paste a YouTube link and get smart notes in seconds.",
+          icons: [<FaYoutube size={50} />, <FaLongArrowAltRight  size={50} />, <IoDocumentTextSharp size={45} />]
+        },
+        {
+          title: "Smart Flashcards",
+          description: "Auto-generate flashcards that actually help you remember things.",
+          icons: [<FaClone size={50} /> ]
+        },
+        {
+          title: "AI Chat Assistant",
+          description: "Ask follow-up questions and get clarifications instantly.",
+          icons: [<FaRobot size={55} /> ]
+        },
+        {
+          title: "Gamified Quizzes",
+          description: "Make learning fun with competitive, timed quizzes and leaderboards that keep you engaged.",
+          icons: [<FaGamepad size={50} />]
+        }
+      ].map((item, i) => (
+        <div key={i} className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg border-2 border-blue-400 ">
+          <h3 className="text-xl font-semibold mb-2">
+            {item.title}
+          </h3>
+          <p className="text-gray-700 dark:text-gray-300">{item.description}</p>
+          <div className="flex gap-2 mx-auto w-fit mt-3 align-center">
+            {item.icons.map((icon, i) => (
+              <span key={i} className="text-blue-600 dark:text-blue-400">{icon}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
 
         {/* Footer */}
         <footer className="text-center text-sm text-gray-600 dark:text-gray-400 py-6 px-4 border-t border-gray-200 dark:border-gray-700">

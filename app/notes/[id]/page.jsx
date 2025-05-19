@@ -4,7 +4,7 @@ import { MathJax, MathJaxContext } from "better-react-mathjax"
 import ReactMarkdown from "react-markdown"
 
 export default function Note() {
-  const prompt = usePrompt()
+  const { prompt } = usePrompt()
 
   return (
     <MathJaxContext>

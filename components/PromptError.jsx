@@ -6,7 +6,7 @@ export default function PromptError() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col items-center min-h-screen my-0 mx-auto text-center space-y-6 justify-center">
+    <div className="flex flex-col items-center mt-30 mx-auto text-center space-y-6 justify-center">
       <FaExclamationTriangle className="w-16 h-16 text-yellow-500 mb-4" />
       <h2 className="text-3xl font-semibold">
         Sorry, we couldn't generate your notes 😔
@@ -16,7 +16,7 @@ export default function PromptError() {
       </p>
       <button
         onClick={() => router.push("/dashboard")}
-        className="px-6 py-2 bg-blue-600 rounded-md text-sm hover:bg-blue-700 cursor-pointer text-white transition"
+        className="px-6 py-4 bg-blue-600 rounded-md text-sm hover:bg-blue-700 cursor-pointer text-white transition"
       >
         Try a New Video
       </button>

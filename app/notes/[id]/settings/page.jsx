@@ -10,7 +10,7 @@ import { updatePrompt, deletePrompt } from "@/actions/prompts/updatePrompt"
 
 export default function PromptSettingsPage() {
   const router = useRouter()
-  const prompt = usePrompt()
+  const { prompt, setPrompt } = usePrompt()
 
   const [title, setTitle] = useState(prompt?.title || "")
   const [isPublic, setIsPublic] = useState(prompt.public)
@@ -18,7 +18,8 @@ export default function PromptSettingsPage() {
 
   async function handleSave() {
     await updatePrompt(prompt.promptId, title, isPublic)
-    router.push(`/dashboard`)
+    setPrompt(prompt => ({...prompt, public: isPublic}))
+    router.push(`/notes/${prompt.promptId}`)
   }
 
   async function handleDelete() {

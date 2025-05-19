@@ -228,6 +228,10 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.custom-html-styles hr:last-child {
+  display: none;
+}
+
 .perspective {
   perspective: 1500px;
 }

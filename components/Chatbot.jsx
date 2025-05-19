@@ -35,7 +35,7 @@ const ChatMessages = React.memo(({ messages }) => {
 })
 
 export default function ChatSidebar({ userMessages }) {
-  const prompt = usePrompt()
+  const { prompt } = usePrompt()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)

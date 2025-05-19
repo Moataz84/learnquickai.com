@@ -6,7 +6,7 @@ import { randomBytes } from "crypto"
 export default async function signup(name, email, password) {
   
   const check = await Users.findOne({email})
-  if (!check) return "This email address is already in use"
+  if (check) return "This email address is already in use"
 
   const hashedPassword = await hash(password, 10)
   const forgotPasswordCode = randomBytes(32).toString("hex")

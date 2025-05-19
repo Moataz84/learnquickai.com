@@ -1,8 +1,8 @@
 import { getPrompt } from "@/actions/prompts/getPrompt"
 import { authConfig } from "@/utils/auth"
 import { getServerSession } from "next-auth"
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default async function Layout({ params, children }) {
   const { id } = await params
