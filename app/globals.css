@@ -214,9 +214,9 @@ body {
 }
 
 
-.custom-html-styles > p:last-of-type {
+.custom-html-styles > p > strong {
   display: block;
-  font-size: 1.5rem; /* text-xl */
+  font-size: 1.75rem; /* text-xl */
   font-weight: bold;
 }
 
