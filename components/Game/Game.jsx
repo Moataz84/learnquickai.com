@@ -1,8 +1,9 @@
+"use client"
 import { useEffect, useState, useRef } from "react";
 import clsx from "clsx";
 import { useSession } from "next-auth/react";
 
-const questions = [
+const q = [
   {
     question: "What is the capital of France?",
     options: ["Berlin", "Madrid", "Paris", "Lisbon"],
@@ -26,6 +27,7 @@ const questions = [
 ];
 
 export default function KahootGame({ gameId, socket, show }) {
+  const [questions, setQuestions] = useState(q)
   const session = useSession()
   const [currentQuestion, setCurrentQuestion] = useState(getRandomQuestion());
   const [score, setScore] = useState(0);
@@ -56,7 +58,7 @@ export default function KahootGame({ gameId, socket, show }) {
       });
     }
       nextQuestion();
-    }, 1000); //
+    }, 5000);
   }
 
   function handleAnswer(option) {

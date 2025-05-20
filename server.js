@@ -5,12 +5,18 @@ const { writeFileSync, readFileSync, existsSync, unlinkSync } = require("fs")
 const { join } = require("path")
 const { randomBytes } = require("crypto")
 
-const app = next({ dev: true })
+const dev = process.env.NODE_ENV !== 'production'
+const app = next({ dev })
 const handle = app.getRequestHandler()
-
+ 
 function readGameData(roomId) {
+  try {
     const dataPath = join(__dirname, `/temp/game_${roomId}.json`)
     return JSON.parse(readFileSync(dataPath, "utf-8"))
+  } catch (e) {
+    console.log(e)
+    return {started: false, users: [], gameId: roomId}
+  }
 }
 
 function writeGameData(roomId, data) {
@@ -35,7 +41,7 @@ app.prepare().then(() => {
   function startGame(gameId) {
     writeGameData(gameId, {started: true})
     io.to(gameId).emit("game-started")
-    let time = (1 * 60) - 1 //
+    let time = (4 * 60) - 1
     const interval = setInterval(() => {
       if (time < 0) {
         const scores = readGameData(gameId).users
@@ -52,7 +58,7 @@ app.prepare().then(() => {
       }
       io.to(gameId).emit("time", time)
       time--
-    }, 100) //
+    }, 1000)
   }
 
   io.on("connection", socket => {
@@ -76,7 +82,7 @@ app.prepare().then(() => {
       if (data.users.map(u => u.id).includes(socket.userId)) {
         return socket.emit("no-lobby")
       }
-      writeGameData(gameId, {gameId, started: false, users: [{id: socket.userId}]})
+      writeGameData(gameId, {gameId, users: [{id: socket.userId}]})
       socket.join(gameId)
       socket.emit("joined-game")
       io.to(gameId).emit("player-joined", room.size)

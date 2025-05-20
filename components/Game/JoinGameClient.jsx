@@ -13,7 +13,7 @@ export default function JoinGameContent() {
   const [waiting, setWaiting] = useState(false)
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3000", {
+    socketRef.current = io(process.env.NEXT_PUBLIC_ORIGIN, {
       path: "/socket.io",
     })
     socketRef.current.on("no-lobby", () => alert("This is not a valid game ID"))
@@ -37,9 +37,9 @@ export default function JoinGameContent() {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-start space-y-4 p-12 w-full">
     <WaitingRoom show={waiting} socket={socketRef?.current} gameId={gameId} />
-    {!waiting? <div className="p-8 w-screen">
+    {!waiting?
       <div className=" shadow-lg rounded-xl p-8 w-full max-w-md text-center space-y-6 dark:bg-gray-800 mx-auto mt-15">
         <h1 className="text-3xl font-bold">Join a Game</h1>
         <input
@@ -56,7 +56,7 @@ export default function JoinGameContent() {
           Join Game
         </button>
       </div>
-    </div> : null}
-    </>
+     : null}
+    </div>
   )
 }

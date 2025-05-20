@@ -7,22 +7,19 @@ import Link from "next/link";
 import { usePrompt } from "@/contexts/PromptContext";
 
 export default function GamePageContent() {
-    const { prompt } = usePrompt()
-
+  const { prompt } = usePrompt()
   const session = useSession();
   const socketRef = useRef(null);
   const [waiting, setWaiting] = useState(false);
   const [gameId, setGameId] = useState("");
-  const [showId, setShowId] = useState(false)
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3000", {
+    socketRef.current = io(process.env.NEXT_PUBLIC_ORIGIN, {
       path: "/socket.io",
     });
     socketRef.current.on("send-game-link", (gameId) => {
       setGameId(gameId);
       setWaiting(true);
-      setShowId(true)
     });
 
     return () => socketRef.current.disconnect();
@@ -34,9 +31,6 @@ export default function GamePageContent() {
 
   return (
     <div className="flex flex-col items-start space-y-4 p-12 w-full">
-      {showId ? (
-        <div className="font-mono select-text">Game Code: <b>{gameId}</b></div>
-      ) : null}
       {!waiting ? (
         <div className="flex gap-3 p-6">
         <button
@@ -52,7 +46,6 @@ export default function GamePageContent() {
           onClick={(e) => {
             socketRef.current.emit("start-game", gameId);
             e.target.remove();
-            setShowId(false)
           }}
           className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition cursor-pointer"
         >

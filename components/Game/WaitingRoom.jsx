@@ -2,7 +2,6 @@
 import { FaTrophy } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import KahootGame from "@/components/Game/Game";
-import { useRouter } from "next/navigation";
 import { usePrompt } from "@/contexts/PromptContext";
 
 function formatTime(seconds) {
@@ -12,7 +11,6 @@ function formatTime(seconds) {
 }
 
 export default function WaitingRoom({ socket, show, gameId }) {
-  const router = useRouter()
   const { prompt } = usePrompt()
   const [players, setPlayers] = useState(0)
   const [gameStarted, setStarted] = useState(false)
@@ -32,7 +30,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
   if (!show) return null
   return (
     <div className="space-y-4 mx-auto">
-      
+      <div className="font-mono select-text">Game Code: <b>{gameId}</b></div>
       <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
         <p className="font-medium text-blue-600">
           🧑‍🤝‍🧑 Players: <span className="font-semibold">{players}</span>
