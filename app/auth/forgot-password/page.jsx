@@ -3,7 +3,7 @@ import ResetPassword from "@/components/ResetPassword"
 import Users from "@/utils/Models/Users"
 
 export const metadata = {
-  title: "Forgot Password"
+  title: "LearnQuick AI - Forgot Password"
 }
 
 export default async function ForgotPassword({ searchParams }) {

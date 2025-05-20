@@ -10,7 +10,7 @@ export const authConfig = {
         const user = await Users.findOne({email: credentials.email})
         const result = await compare(credentials.password, user.password)
         if (result) {
-          return {id: user.id}
+          return {id: user.id, name: user.name}
         }
         return null
       }

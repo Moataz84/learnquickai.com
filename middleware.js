@@ -18,7 +18,7 @@ export async function middleware(request) {
   const user = await Users.findOne({_id: id})
 
   if (!session) {
-    if (["/dashboard", "/notes", "/account", "/auth/verify", "/auth/resend-code"].includes(base.pathname)) {
+    if (["/dashboard", "/notes", "/account", "/auth/verify", "/auth/resend-code"].find(l => base.pathname.includes(l))) {
       return NextResponse.redirect(`${base.origin}/auth/login`)
     }
     return NextResponse.next()

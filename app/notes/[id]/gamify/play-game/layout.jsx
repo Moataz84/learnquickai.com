@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "LearnQuick AI - Login"
+  title: "LearnQuick AI - Enter Game Code"
 }
 
 export default function Layout({ children }) {

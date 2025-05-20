@@ -1,7 +1,7 @@
 import Menu from "@/components/Menu"
 
 export const metadata = {
-  title: "Terms of Service"
+  title: "LearnQuick AI - Terms of Service"
 }
 
 export default function TermsOfService() {

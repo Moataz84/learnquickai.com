@@ -1,9 +1,11 @@
-"use client"
+"use client";
+import GamePageContent from "@/components/Game/GamifyClient";
+import { SessionProvider } from "next-auth/react";
 
 export default function GamePage() {
-
-
   return (
-    <div>page</div>
-  )
+    <SessionProvider>
+      <GamePageContent />
+    </SessionProvider>
+  );
 }

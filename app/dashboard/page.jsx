@@ -7,7 +7,7 @@ import Link from "next/link"
 import { FaFileAlt, FaMicrophone, FaYoutube } from "react-icons/fa"
 
 export const metadata = {
-  title: "Dashboard"
+  title: "LearnQuick AI - Dashboard"
 }
 
 export default async function Dashboard() {

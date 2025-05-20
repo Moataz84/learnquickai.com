@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   if (!prompt.public && prompt.userId !== session?.user?.id) return {title: "Not Found"}
   if (prompt.summary === "failed") return {title: "Note Failed"}
   if (prompt.summary === "") return {title: "Loading"}
-  return {title: prompt.title}
+  return {title: `LearnQuick AI - ${prompt.title}`}
 }
 
 export default async function Layout({ params, children }) {

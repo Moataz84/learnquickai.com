@@ -2,6 +2,7 @@
 import { hash } from "bcrypt"
 import Users from "@/utils/Models/Users"
 import { randomBytes } from "crypto"
+import sendEmail from "@/actions/sendEmail"
 
 export default async function signup(name, email, password) {
   

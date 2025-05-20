@@ -1,0 +1,83 @@
+"use client"
+import { FaTrophy } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import KahootGame from "@/components/Game/Game";
+import { useRouter } from "next/navigation";
+import { usePrompt } from "@/contexts/PromptContext";
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+}
+
+export default function WaitingRoom({ socket, show, gameId }) {
+  const router = useRouter()
+  const { prompt } = usePrompt()
+  const [players, setPlayers] = useState(0)
+  const [gameStarted, setStarted] = useState(false)
+  const [gameEnded, setEnded] = useState(false)
+  const [time, setTime] = useState(240)
+  const [leaderBoard, setLeaderBoard] = useState([])
+
+  useEffect(() => {
+    socket?.on("player-joined", num => setPlayers(num))
+    socket?.on("game-started", () => setStarted(true))
+    socket?.on("game-ended", data => {setStarted(false); setEnded(true); setLeaderBoard(data); console.log(data)})
+    socket?.on("time", time => setTime(time))
+  }, [socket]);
+
+  const playAgain = () => window.location.href = `/notes/${prompt.promptId}/gamify`
+
+  if (!show) return null
+  return (
+    <div className="space-y-4 mx-auto">
+      
+      <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
+        <p className="font-medium text-blue-600">
+          🧑‍🤝‍🧑 Players: <span className="font-semibold">{players}</span>
+        </p>
+        {gameStarted? <p className="font-medium text-red-600">
+          ⏱ Time Left: <span className="font-semibold">{formatTime(time)}</span>
+        </p> : null}
+      </div>
+
+      {gameStarted? <KahootGame gameId={gameId} socket={socket} show={show} />: null}
+      {gameEnded? 
+        <div className="flex flex-col bg-gray-100 dark:bg-gray-900 mt-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-md w-full text-center space-y-6">
+            <div className="flex flex-col items-center space-y-2">
+              <FaTrophy size={48} className="text-yellow-500" />
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                Game Over! 🏁
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400">Here are the final scores:</p>
+            </div>
+
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700 text-left">
+              {leaderBoard
+                .sort((a, b) => b.score - a.score)
+                .map((player, index) => (
+                  <li key={index} className="py-2 flex justify-between items-center">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      #{index + 1} {player.name}
+                    </span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {player.score} pts
+                    </span>
+                  </li>
+              ))}
+            </ul>
+            
+            <button
+              onClick={playAgain}
+              className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+            >
+              🔁 Play Again
+            </button>
+          </div>
+        </div>
+      : null}
+    </div>
+  )
+}

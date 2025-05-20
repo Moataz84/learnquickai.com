@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Verify Email"
+  title: "LearnQuick AI - Verify Email"
 }
 
 export default function Layout({ children }) {

@@ -1,7 +1,7 @@
 import Menu from "@/components/Menu"
 
 export const metadata = {
-  title: "Privacy Policy"
+  title: "LearnQuick AI - Privacy Policy"
 }
 
 export default function PrivacyPolicy() {

@@ -3,7 +3,7 @@ import Menu from "@/components/Menu"
 import PricingButton from "@/components/PricingButton"
 
 export const metadata = {
-  title: "Pricing"
+  title: "LearnQuick AI - Pricing"
 }
 
 export default async function PricingPage() {

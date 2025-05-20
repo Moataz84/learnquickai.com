@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 export const metadata = {
-  title: "Account"
+  title: "LearnQuick AI - Account"
 }
 
 export default async function AccountPage() {
