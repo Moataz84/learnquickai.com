@@ -5,7 +5,7 @@ const { writeFileSync, readFileSync, existsSync, unlinkSync } = require("fs")
 const { join } = require("path")
 const { randomBytes } = require("crypto")
 
-const dev = process.env.NODE_ENV !== 'production'
+const dev = false
 const app = next({ dev })
 const handle = app.getRequestHandler()
  
