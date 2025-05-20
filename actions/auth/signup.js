@@ -23,5 +23,6 @@ export default async function signup(name, email, password) {
     credentials: true
   }).save()
   
+  sendEmail(email, "Verify Email", `Your verification code is ${code}.`)
   return "success"
 }
