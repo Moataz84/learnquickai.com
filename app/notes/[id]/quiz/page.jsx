@@ -27,7 +27,7 @@ function shuffleQuestions(questions) {
 export default function QuizPage() {
   const { prompt } = usePrompt()
   const { questions, setQuestions } = useQuestions()
-  const [quizData, setQuizData] = useState(questions)
+  const [quizData, setQuizData] = useState(questions.length? questions : null)
   const [isQuizStarted, setIsQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})

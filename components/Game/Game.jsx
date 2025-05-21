@@ -2,15 +2,30 @@
 import { useEffect, useState, useRef } from "react"
 import clsx from "clsx"
 import { useSession } from "next-auth/react"
-import { usePrompt } from "@/contexts/PromptContext"
 import { MathJax, MathJaxContext } from "better-react-mathjax"
 import ReactMarkdown from "react-markdown"
 import { useQuestions } from "@/contexts/QuestionsContext"
 
+function shuffle(array) {
+  const newArray = [...array]
+  const length = newArray.length
+
+  for (let start = 0; start < length; start++) {
+    const randomPosition = Math.floor((newArray.length - start) * Math.random())
+    const randomItem = newArray.splice(randomPosition, 1)
+    newArray.push(...randomItem)
+  }
+
+  return newArray
+}
+
+function shuffleQuestions(questions) {
+  return shuffle(questions).map(q => ({ ...q, options: shuffle(q.options) }))
+}
+
 export default function KahootGame({ gameId, socket }) {
-  const { prompt } = usePrompt()
   const { questions:q } = useQuestions()
-  const [questions, setQuestions] = useState(q)
+  const [questions, setQuestions] = useState(shuffleQuestions(q))
   const session = useSession()
   const [currentQuestion, setCurrentQuestion] = useState(getRandomQuestion())
   const [score, setScore] = useState(0)
@@ -31,8 +46,12 @@ export default function KahootGame({ gameId, socket }) {
     audio.play()
   }
 
-  function getRandomQuestion() {
-    return questions[Math.floor(Math.random() * questions.length)]
+  function getRandomQuestion(previousQuestion) {
+    let newQuestion
+    do {
+      newQuestion = questions[Math.floor(Math.random() * questions.length)]
+    } while (newQuestion === previousQuestion && questions.length > 1)
+    return newQuestion
   }
 
   function nextQuestion() {

@@ -33,7 +33,8 @@ export default function Login() {
       setError("Email or password is incorrect")
       return
     }
-    router.push("/account")
+      router.push("/dashboard")
+  router.refresh()
   }
 
   async function googleLogin(e) {
