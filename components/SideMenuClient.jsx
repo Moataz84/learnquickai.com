@@ -7,7 +7,7 @@ import { FaMoon, FaSun, FaBars, FaUser, FaSignOutAlt, FaClone, FaCog, FaGamepad 
 import { FaNoteSticky } from "react-icons/fa6"
 import Logo from "@/components/Logo"
 
-export default function SideMenuClient({ isDarkMode, promptId }) {
+export default function SideMenuClient({ isLightMode, promptId }) {
 
   const setCookie = (name, value, days) => {
     const date = new Date()
@@ -16,12 +16,12 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
   }
   
   const [collapsed, setCollapsed] = useState(false)
-  const [darkMode, setDarkMode] = useState(isDarkMode)
+  const [lightMode, setlightMode] = useState(isLightMode)
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode)
-    setCookie("darkMode", darkMode.toString(), 365)
-  }, [darkMode])
+    document.documentElement.classList.toggle("dark", !lightMode)
+    setCookie("lightMode", lightMode.toString(), 365)
+  }, [lightMode])
 
   const CollapseIcon = () => (
     <svg
@@ -48,14 +48,14 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
 
   return (
     <div
-      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-69"} ${!darkMode ? "border-gray-300" : "border-gray-700"}`}
+      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-69"} ${lightMode ? "border-gray-300" : "border-gray-700"}`}
     >
       {/* Header */}
       <div className="flex items-center justify-center mb-6">
         <div
           className={`overflow-hidden transition-all duration-500 ${collapsed ? "w-0" : "w-full"}`}
         >
-          <Logo isDarkMode={darkMode} />
+          <Logo isLightMode={lightMode} />
         </div>
         <button onClick={() => setCollapsed(!collapsed)} aria-label="Toggle Sidebar" className="cursor-pointer px-2">
           {collapsed ? <FaBars size={24} /> : <CollapseIcon flipped />}
@@ -176,12 +176,12 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
       {/* Dark Mode Toggle */}
       <div className="mt-auto pt-4 border-t border-gray-300 dark:border-gray-700">
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={() => setlightMode(!lightMode)}
           className="flex items-center gap-4 px-3 py-3 rounded-lg text-lg transition-all duration-300 
           hover:bg-yellow-100 dark:hover:bg-yellow-900 group w-full cursor-pointer"
         >
           <span>
-            {darkMode ? (
+            {!lightMode ? (
               <FaSun
                 size={22}
                 className="text-yellow-600 group-hover:text-yellow-500 transition-colors duration-300"
@@ -196,7 +196,7 @@ export default function SideMenuClient({ isDarkMode, promptId }) {
           <span
             className={`whitespace-nowrap transition-all duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
           >
-            {darkMode ? "Light Mode" : "Dark Mode"}
+            {!lightMode ? "Light Mode" : "Dark Mode"}
           </span>
         </button>
 

@@ -1,8 +1,8 @@
 "use client"
-import { FaTrophy } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import KahootGame from "@/components/Game/Game";
-import { usePrompt } from "@/contexts/PromptContext";
+import { FaTrophy } from "react-icons/fa"
+import { useEffect, useState } from "react"
+import KahootGame from "@/components/Game/Game"
+import { usePrompt } from "@/contexts/PromptContext"
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60)
@@ -21,9 +21,9 @@ export default function WaitingRoom({ socket, show, gameId }) {
   useEffect(() => {
     socket?.on("player-joined", num => setPlayers(num))
     socket?.on("game-started", () => setStarted(true))
-    socket?.on("game-ended", data => {setStarted(false); setEnded(true); setLeaderBoard(data); console.log(data)})
+    socket?.on("game-ended", data => {setStarted(false); setEnded(true); setLeaderBoard(data);})
     socket?.on("time", time => setTime(time))
-  }, [socket]);
+  }, [socket])
 
   const playAgain = () => window.location.href = `/notes/${prompt.promptId}/gamify`
 

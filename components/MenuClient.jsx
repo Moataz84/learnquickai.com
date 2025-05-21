@@ -11,31 +11,30 @@ const setCookie = (name, value, days) => {
   document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`
 }
 
-export default function MenuClient({ isDarkMode, user }) {
-  const [darkMode, setDarkMode] = useState(isDarkMode)
-
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => {
-      const newDarkMode = !prev
-      setCookie("darkMode", newDarkMode, 365)
-      document.documentElement.classList.toggle("dark", newDarkMode)
-      return newDarkMode
+export default function MenuClient({ isLightMode, user }) {
+  const [lightMode, setLightMode] = useState(isLightMode)
+  const togglelightMode = () => {
+    setLightMode((prev) => {
+      const newlightMode = !prev
+      setCookie("lightMode", newlightMode, 365)
+      document.documentElement.classList.toggle("dark", !newlightMode)
+      return newlightMode
     })
   }
 
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300 sticky top-0">
       {/* Left: Logo */}
-      <Logo isDarkMode={darkMode} />
+      <Logo isLightMode={lightMode} />
 
       {/* Middle: Navigation Links */}
       <nav className="flex items-center gap-4 ml-auto">
         {/* Dark Mode Toggle */}
         <Button
-          onClick={toggleDarkMode}
+          onClick={togglelightMode}
           className="p-0 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 outline-none cursor-pointer"
         >
-          {darkMode ? <FaSun size={14} /> : <FaMoon size={14} />}
+          {!lightMode ? <FaSun size={14} /> : <FaMoon size={14} />}
         </Button>
 
         <Link

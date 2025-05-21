@@ -12,10 +12,10 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   await connectDB()
   const cookiesJar = await cookies()
-  const darkMode = cookiesJar?.get("darkMode")
+  const lightMode = cookiesJar?.get("lightMode")
 
   return (
-    <html lang="en" className={darkMode?.value === "true"? "dark" : ""}>
+    <html lang="en" className={lightMode?.value === "true"? "" : "dark"}>
       <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white">
         {children}
       </body>

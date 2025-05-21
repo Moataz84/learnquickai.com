@@ -6,7 +6,7 @@ import WaitingRoom from "@/components/Game/WaitingRoom"
 import { useSession } from "next-auth/react"
 
 export default function JoinGameContent() {
-  const session = useSession();
+  const session = useSession()
   const [gameId, setGameId] = useState("")
   const socketRef = useRef(null)  
   const searchParams = useSearchParams()
@@ -22,7 +22,7 @@ export default function JoinGameContent() {
   }, [])
 
   useEffect(() => {
-    if (session.data?.user?.id) socketRef.current.emit("user-id", session?.data?.user?.id)
+    if (session.data?.user?.id) socketRef.current.emit("user-id", {userId: session?.data?.user?.id, name: session?.data?.user?.name})
   }, [session.data?.user?.id])
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function JoinGameContent() {
   }, [searchParams])
 
   const handleJoin = () => {
-    socketRef.current.emit("player-join", gameId)
+    socketRef.current.emit("player-join", gameId.toLowerCase().trim())
   }
 
   return (

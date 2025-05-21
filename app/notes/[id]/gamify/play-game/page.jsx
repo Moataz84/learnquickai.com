@@ -1,5 +1,5 @@
 "use client"
-import JoinGameContent from "@/components/Game/JoinGameClient";
+import JoinGameContent from "@/components/Game/JoinGameClient"
 import { SessionProvider } from "next-auth/react"
 
 export default function JoinGamePage() {
@@ -7,5 +7,5 @@ export default function JoinGamePage() {
     <SessionProvider>
       <JoinGameContent />
     </SessionProvider>
-  );
+  )
 }

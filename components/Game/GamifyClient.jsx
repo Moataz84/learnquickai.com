@@ -1,32 +1,32 @@
-"use client";
-import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
-import WaitingRoom from "@/components/Game/WaitingRoom";
-import Link from "next/link";
-import { usePrompt } from "@/contexts/PromptContext";
+"use client"
+import { useSession } from "next-auth/react"
+import { useEffect, useRef, useState } from "react"
+import { io } from "socket.io-client"
+import WaitingRoom from "@/components/Game/WaitingRoom"
+import Link from "next/link"
+import { usePrompt } from "@/contexts/PromptContext"
 
 export default function GamePageContent() {
   const { prompt } = usePrompt()
-  const session = useSession();
-  const socketRef = useRef(null);
-  const [waiting, setWaiting] = useState(false);
-  const [gameId, setGameId] = useState("");
+  const session = useSession()
+  const socketRef = useRef(null)
+  const [waiting, setWaiting] = useState(false)
+  const [gameId, setGameId] = useState("")
 
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_ORIGIN, {
       path: "/socket.io",
-    });
+    })
     socketRef.current.on("send-game-link", (gameId) => {
-      setGameId(gameId);
-      setWaiting(true);
-    });
+      setGameId(gameId)
+      setWaiting(true)
+    })
 
-    return () => socketRef.current.disconnect();
-  }, []);
+    return () => socketRef.current.disconnect()
+  }, [])
 
   useEffect(() => {
-    if (session.data?.user?.id) socketRef.current.emit("user-id", session?.data?.user?.id)
+    if (session.data?.user?.id) socketRef.current.emit("user-id", {userId: session?.data?.user?.id, name: session?.data?.user?.name})
   }, [session.data?.user?.id])
 
   return (
@@ -37,15 +37,15 @@ export default function GamePageContent() {
           onClick={() => socketRef.current.emit("init-game")}
           className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer"
         >
-          Initialize New Game
+          Start New Game
         </button>
         <Link className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer" href={`/notes/${prompt.promptId}/gamify/play-game`}>Join Game</Link>
         </div>
       ) : (
         <button
           onClick={(e) => {
-            socketRef.current.emit("start-game", gameId);
-            e.target.remove();
+            socketRef.current.emit("start-game", gameId)
+            e.target.remove()
           }}
           className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition cursor-pointer"
         >
@@ -55,5 +55,5 @@ export default function GamePageContent() {
 
       <WaitingRoom show={waiting} socket={socketRef?.current} gameId={gameId} />
     </div>
-  );
+  )
 }
