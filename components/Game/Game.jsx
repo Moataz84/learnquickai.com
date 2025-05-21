@@ -92,7 +92,6 @@ export default function KahootGame({ gameId, socket }) {
 
   <div className="space-y-4">
     {currentQuestion?.options.map((option) => {
-      console.log(option.id, currentQuestion?.answer)
       return (
         <button
           key={option.id}

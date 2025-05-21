@@ -6,7 +6,7 @@ const { join } = require("path")
 const { randomBytes } = require("crypto")
 
 const dev = process.env.ENV === "development"
-const app = next({ dev: false })
+const app = next({ dev })
 const handle = app.getRequestHandler()
  
 function readGameData(roomId) {
@@ -34,13 +34,36 @@ app.prepare().then(() => {
   })
 
   function startGame(gameId) {
-    writeGameData(gameId, {started: true})
+    writeGameData(gameId, { started: true })
     io.to(gameId).emit("game-started")
+
     let time = (4 * 60) - 1
     const interval = setInterval(() => {
       if (time < 0) {
-        const scores = readGameData(gameId).users
+        clearInterval(interval)
+
+        const gameFile = join(__dirname, `/temp/game_${gameId}.json`)
+        let scores = []
+
+        if (existsSync(gameFile)) {
+          try {
+            scores = readGameData(gameId).users
+          } catch (err) {
+            console.error("Error reading game data:", err)
+          }
+
+          try {
+            unlinkSync(gameFile)
+          } catch (err) {
+            console.error("Error deleting game file:", err)
+          }
+        } else {
+          console.warn("Game file already deleted.")
+        }
+
         io.to(gameId).emit("game-ended", scores)
+
+        // Clean up sockets
         const room = io.sockets.adapter.rooms.get(gameId)
         if (room) {
           for (const socketId of room) {
@@ -48,12 +71,11 @@ app.prepare().then(() => {
             socket?.leave(gameId)
           }
         }
-        unlinkSync(join(__dirname, `/temp/game_${gameId}.json`))
-        return clearInterval(interval)
+      } else {
+        io.to(gameId).emit("time", time)
+        time--
       }
-      io.to(gameId).emit("time", time)
-      time--
-    }, 1000) ////////
+    }, 1000)
   }
 
   io.on("connection", socket => {
@@ -111,7 +133,7 @@ app.prepare().then(() => {
             }
           }
           const data = readGameData(room)
-          if (data.createdBy === socket.userId) {
+          if (data.createdBy === socket.userId && !data.started) {
             io.to(room).emit("game-started")
             startGame(room)
           }
