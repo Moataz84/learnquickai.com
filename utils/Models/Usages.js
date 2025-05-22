@@ -5,7 +5,8 @@ const schema = new Schema({
   promptId: String,
   dateTime: String,
   seconds: String,
-  paidFor: Boolean
+  paidFor: Boolean,
+  type: String
 })
 
 const Usages = models.usages || model("usages", schema)

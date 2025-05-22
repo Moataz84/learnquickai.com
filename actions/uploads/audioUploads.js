@@ -67,7 +67,7 @@ export async function checkVideo(fileId) {
   const promptId = v4()
   await Promise.all([
     new Prompts({userId: id, promptId, summary: "", title: "", type: "audio", public: false}).save(),
-    new Usages({userId: id, dateTime: Date.now().toString(), seconds: duration.toString(), promptId, paidFor: true}).save()
+    new Usages({userId: id, dateTime: Date.now().toString(), seconds: duration.toString(), promptId, paidFor: true, type: "audio"}).save()
   ])
   return {msg: "success", promptId, videoId, videoPath}
 }

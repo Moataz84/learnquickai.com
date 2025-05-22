@@ -44,7 +44,10 @@ export async function checkDocument(fileId, fileExtension) {
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
   const promptId = v4()
-  await new Prompts({userId: id, promptId, summary: "", title: "", type: "doc", public: false}).save()
+  await Promise.all([
+    new Prompts({userId: id, promptId, summary: "", title: "", type: "doc", public: false}).save(),
+    new Usages({userId: id, dateTime: Date.now().toString(), seconds: 0, promptId, paidFor: false, type: "document"}).save()
+  ])
   return {msg: "success", promptId, documentPath}
 }
 

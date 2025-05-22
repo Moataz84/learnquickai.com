@@ -74,7 +74,7 @@ export async function checkYTVideo(url) {
     const promptId = v4()
     await Promise.all([
       new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false}).save(),
-      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: false}).save()
+      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: false, type: "video"}).save()
     ])
     return {msg: "success", promptId, ytVideoId: videoId}
   } catch (e) {
