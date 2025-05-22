@@ -20,3 +20,5 @@ jobs:
             eval `ssh-agent -s`
             ssh-add /home/moataz/.ssh/id_github
             git pull origin main
+            npm run build
+            pm2 restart server
