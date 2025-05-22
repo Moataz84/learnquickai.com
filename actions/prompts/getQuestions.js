@@ -3,12 +3,12 @@ import { authConfig } from "@/utils/auth"
 import Questions from "@/utils/Models/Questions"
 import { getServerSession } from "next-auth"
 
-export default async function getQuestions(promptId, userId = null) {
+export default async function getQuestions(promptId, userId) {
   let questions
   if (userId === "id") {
     const session = await getServerSession(authConfig)
-    const userId = session?.user?.id
-    questions = await Questions.find({promptId, userId})
+    const id = session?.user?.id
+    questions = await Questions.find({promptId, userId: id})
   } else {
     questions = await Questions.find({promptId}).limit(25)
   }

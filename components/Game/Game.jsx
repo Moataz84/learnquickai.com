@@ -2,9 +2,8 @@
 import { useEffect, useState, useRef } from "react"
 import clsx from "clsx"
 import { useSession } from "next-auth/react"
-import { MathJax, MathJaxContext } from "better-react-mathjax"
-import ReactMarkdown from "react-markdown"
 import { useQuestions } from "@/contexts/QuestionsContext"
+import MathRender from "@/components/MathRender"
 
 function shuffle(array) {
   const newArray = [...array]
@@ -102,11 +101,7 @@ export default function KahootGame({ gameId, socket }) {
   return (
     <div className="w-full max-w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6">
   <h2 className="text-2xl font-bold min-h-[56px]">
-    <MathJaxContext>
-      <MathJax inline dynamic>
-        <ReactMarkdown>{currentQuestion?.question}</ReactMarkdown>
-      </MathJax>
-    </MathJaxContext>
+    <MathRender>{currentQuestion?.question}</MathRender>
   </h2>
 
   <div className="space-y-4">
@@ -128,11 +123,7 @@ export default function KahootGame({ gameId, socket }) {
           )}
           style={{ minHeight: "60px" }}
         >
-          <MathJaxContext>
-            <MathJax inline dynamic>
-              <ReactMarkdown>{option.text}</ReactMarkdown>
-            </MathJax>
-          </MathJaxContext>
+          <MathRender>{option.text}</MathRender>
         </button>
       )
     })}

@@ -11,7 +11,7 @@ export function QuestionsProvider({ promptId, initialQuestions, children }) {
   const [type, setType] = useState("id")
 
   useEffect(() => {
-    if (pathname.includes("/gamify")) return setType(null)
+    if (pathname.includes("/gamify")) return setType("nid")
     setType("id")
   }, [pathname])
 
@@ -33,7 +33,7 @@ export function QuestionsProvider({ promptId, initialQuestions, children }) {
 export function useQuestions() {
   const context = useContext(QuestionsContext)
   if (context === null) {
-    throw new Error("usePrompt must be used within a PromptProvider")
+    throw new Error("useQuestions must be used within a QuestionsProvider")
   }
   return context
 }

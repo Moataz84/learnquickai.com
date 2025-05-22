@@ -3,8 +3,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { FiChevronLeft, FiChevronRight, FiSend, FiArrowDown } from "react-icons/fi"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MathJax, MathJaxContext } from "better-react-mathjax"
-import ReactMarkdown from "react-markdown"
+import MathRender from "@/components/MathRender"
 import { usePrompt } from "@/contexts/PromptContext"
 import getMessages from "@/actions/prompts/getMessages"
 
@@ -20,11 +19,7 @@ const ChatMessages = React.memo(({ messages }) => {
         }`}
         style={{ maxWidth: "80%", width: "fit-content" }}
       >
-        <MathJaxContext>
-          <MathJax inline dynamic>
-            <ReactMarkdown>{msg.content}</ReactMarkdown>
-          </MathJax>
-        </MathJaxContext>
+        <MathRender>{msg.content}</MathRender>
       </div>
     ))
   ) : (

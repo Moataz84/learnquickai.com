@@ -1,9 +1,8 @@
 "use client"
 import { generateQuiz } from "@/actions/prompts/generateQuestions"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FaRegQuestionCircle, FaClipboardList, FaArrowLeft, FaArrowRight } from "react-icons/fa"
-import { MathJax, MathJaxContext } from "better-react-mathjax"
-import ReactMarkdown from "react-markdown"
+import MathRender from "@/components/MathRender"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
 
@@ -34,6 +33,12 @@ export default function QuizPage() {
   const [quizStatus, setQuizStatus] = useState(null)
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+  if (questions.length > 0) {
+    setQuizData(questions)
+  }
+}, [questions])
 
   async function handleGenerateQuiz() {
     setIsLoading(true)
@@ -153,18 +158,13 @@ export default function QuizPage() {
                 </button>
               </div>
               <div className="text-xl mt-4 h-16 overflow-hidden">
-                <MathJaxContext>
-                  <MathJax inline dynamic>
-                    <ReactMarkdown>{quizData[currentQuestionIndex].question}</ReactMarkdown>
-                  </MathJax>
-                </MathJaxContext>
+                <MathRender>{quizData[currentQuestionIndex].question}</MathRender>
               </div>
               <div className="space-y-4 mt-6">
                 {quizData[currentQuestionIndex].options.map((option) => {
                   const answer = userAnswers[currentQuestionIndex]
                   const isCorrect = answer?.correct && option.id === quizData[currentQuestionIndex].answer
                   const isWrong = answer && !answer.correct && option.id === answer.answer
-
                   return (
                     <button
                       key={option.id}
@@ -174,11 +174,7 @@ export default function QuizPage() {
                       } ${isWrong ? "border-4 border-red-500 animate-pulse" : ""}`}
                       style={{ minHeight: "60px" }}
                     >
-                      <MathJaxContext>
-                        <MathJax inline dynamic>
-                          <ReactMarkdown>{option.text}</ReactMarkdown>
-                        </MathJax>
-                      </MathJaxContext>
+                      <MathRender>{option.text}</MathRender>
                     </button>
                   )
                 })}

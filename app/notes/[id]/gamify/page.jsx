@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import GamePageContent from "@/components/Game/GamifyClient"
 import { SessionProvider } from "next-auth/react"
 
@@ -7,5 +7,5 @@ export default function GamePage() {
     <SessionProvider>
       <GamePageContent />
     </SessionProvider>
-  );
+  )
 }

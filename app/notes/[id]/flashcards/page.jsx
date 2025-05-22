@@ -2,8 +2,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { MathJax, MathJaxContext } from "better-react-mathjax"
-import ReactMarkdown from "react-markdown"
+import MathRender from "@/components/MathRender"
 import { generateQuiz } from "@/actions/prompts/generateQuestions"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
@@ -16,6 +15,17 @@ export default function FlashcardPage() {
   const [currentCard, setCurrentCard] = useState(flashCards[0] || null)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!questions?.length) return
+    const formatted = questions.map(q => ({
+      question: q.question,
+      answer: q.options.find(a => a.id === q.answer)?.text
+    }))
+    setFlashCards(formatted)
+    setCurrentIndex(0)
+    setCurrentCard(formatted[0] || null)
+  }, [questions])
 
   useEffect(() => {
     if (flashCards?.length > 0) {
@@ -84,21 +94,13 @@ export default function FlashcardPage() {
             >
               {/* Front */}
               <div className="absolute w-full h-full backface-hidden flex items-center justify-center rounded-2xl bg-white dark:bg-gray-800 shadow-xl text-2xl text-center px-12 text-gray-900 dark:text-white">
-                <MathJaxContext>
-                  <MathJax inline dynamic>
-                    <ReactMarkdown>{currentCard.question}</ReactMarkdown>
-                  </MathJax>
-                </MathJaxContext>
+                <MathRender>{currentCard.question}</MathRender>
               </div>
 
               {/* Back */}
               <div className="absolute w-full h-full backface-hidden rotate-x-180 flex items-center justify-center rounded-2xl bg-white dark:bg-gray-800 shadow-xl text-2xl text-center px-12"
               >
-                <MathJaxContext>
-                  <MathJax inline dynamic>
-                    <ReactMarkdown>{currentCard.answer}</ReactMarkdown>
-                  </MathJax>
-                </MathJaxContext>
+                <MathRender>{currentCard.answer}</MathRender>
               </div>
             </div>
           </div>
