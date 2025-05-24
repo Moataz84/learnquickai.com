@@ -71,6 +71,9 @@ export async function checkYTVideo(url) {
     if (!user.active && totalTime > 3600) {
       return {msg: "exceeded"}
     }
+    if (length > (3600 * 10)) {
+      return {msg: "limit"}
+    }
     const promptId = v4()
     await Promise.all([
       new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false}).save(),

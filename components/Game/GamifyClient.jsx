@@ -18,6 +18,9 @@ export default function GamePageContent() {
   const [waiting, setWaiting] = useState(false)
   const [gameId, setGameId] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
+  const [duration, setDuration] = useState(5)
+  const [interval, setInterval] = useState(7)
+  const isValid = duration >= 1 && duration <= 7 && interval >= 2 && interval <= 30
 
   // Setup socket connection
   useEffect(() => {
@@ -92,19 +95,51 @@ export default function GamePageContent() {
         </div>
       )}
 
-      {questions.length > 0 && waiting && (
-        <button
-          onClick={(e) => {
-            socketRef.current.emit("start-game", gameId)
-            e.target.remove()
-          }}
-          className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition cursor-pointer"
-        >
-          Start Game
-        </button>
-      )}
-
       <WaitingRoom show={waiting} socket={socketRef?.current} gameId={gameId} />
+
+      {questions.length > 0 && waiting && (
+        <div className="flex flex-col gap-4 items-start">
+          {/* Total Duration Field */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">Total Duration (minutes)</label>
+            <input
+              type="number"
+              min={1}
+              max={7}
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="border rounded px-3 py-2 w-48"
+            />
+          </div>
+            
+          {/* Time Between Questions Field */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">Time Between Questions (seconds)</label>
+            <input
+              type="number"
+              min={2}
+              max={30}
+              value={interval}
+              onChange={(e) => setInterval(Number(e.target.value))}
+              className="border rounded px-3 py-2 w-48"
+            />
+          </div>
+            
+          {/* Start Game Button */}
+          <button
+            onClick={(e) => {
+              socketRef.current.emit("start-game", {gameId, duration, interval})
+              e.target.parentElement.remove()
+            }}
+            disabled={!isValid}
+            className={`px-6 py-3 rounded-md transition cursor-pointer ${
+              isValid ? "bg-green-600 hover:bg-green-700 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"
+            }`}
+          >
+            Start Game
+          </button>
+        </div>
+      )}
     </div>
   )
 }

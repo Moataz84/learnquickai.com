@@ -22,7 +22,7 @@ function shuffleQuestions(questions) {
   return shuffle(questions).map(q => ({ ...q, options: shuffle(q.options) }))
 }
 
-export default function KahootGame({ gameId, socket }) {
+export default function KahootGame({ gameId, socket, interval }) {
   const { questions:q } = useQuestions()
   const [questions, setQuestions] = useState(shuffleQuestions(q))
   const session = useSession()
@@ -63,7 +63,7 @@ export default function KahootGame({ gameId, socket }) {
     clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       nextQuestion()
-    }, 7000)
+    }, interval * 1000)
   }
 
   function handleAnswer(option) {
@@ -112,7 +112,7 @@ export default function KahootGame({ gameId, socket }) {
           onClick={() => handleAnswer(option)}
           disabled={selected !== null}
           className={clsx(
-            "w-full py-4 text-lg rounded-lg transition cursor-pointer",
+            "w-full py-4 px-2 text-lg rounded-lg transition cursor-pointer",
             "text-white",
             {
               "bg-green-500 animate-pulse": selected?.id === option.id && option.id === currentQuestion?.answer,
@@ -128,9 +128,7 @@ export default function KahootGame({ gameId, socket }) {
       )
     })}
   </div>
-
-  <div className="text-purple-600 font-semibold">Score: {score}</div>
-  <div className="text-gray-400 text-sm">Auto-advances every 7 seconds</div>
+  <div className="text-gray-400 text-sm">Auto-advances every {interval} seconds</div>
 </div>
 
     )

@@ -33,11 +33,11 @@ app.prepare().then(() => {
     },
   })
 
-  function startGame(gameId) {
+  function startGame(gameId, duration, qInterval) {
+    let time = (duration * 60)
     writeGameData(gameId, { started: true })
-    io.to(gameId).emit("game-started")
-
-    let time = (4 * 60) - 1
+    io.to(gameId).emit("game-started", {users: readGameData(gameId).users, time, interval: qInterval})
+    time--
     const interval = setInterval(() => {
       if (time < 0) {
         clearInterval(interval)
@@ -72,7 +72,20 @@ app.prepare().then(() => {
           }
         }
       } else {
+        // Send time
         io.to(gameId).emit("time", time)
+
+        // Send current scores
+        const gameFile = join(__dirname, `/temp/game_${gameId}.json`)
+        if (existsSync(gameFile)) {
+          try {
+            const scores = readGameData(gameId).users
+            io.to(gameId).emit("score", scores)
+          } catch (err) {
+            console.error("Error reading scores for emit:", err)
+          }
+        }
+
         time--
       }
     }, 1000)
@@ -109,8 +122,8 @@ app.prepare().then(() => {
       if (data.started) socket.emit("game-started")
     })
 
-    socket.on("start-game", gameId => {
-      startGame(gameId)
+    socket.on("start-game", data => {
+      startGame(data.gameId, data.duration, data.interval)
     })
 
     socket.on("answer-selected", data => {
@@ -135,7 +148,7 @@ app.prepare().then(() => {
           const data = readGameData(room)
           if (data.createdBy === socket.userId && !data.started) {
             io.to(room).emit("game-started")
-            startGame(room)
+            startGame(room, 4)
           }
           writeGameData(room, {started: true, users: [...data.users.filter(user => user.id !== socket.userId)]})
           io.to(room).emit("player-joined", io.sockets.adapter.rooms.get(room).size - 1)
