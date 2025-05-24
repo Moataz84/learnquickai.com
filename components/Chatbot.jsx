@@ -146,6 +146,12 @@ export default function ChatSidebar({ userMessages }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSend()
+                  }
+                }}
               />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">

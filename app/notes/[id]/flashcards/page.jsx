@@ -15,6 +15,7 @@ export default function FlashcardPage() {
   const [currentCard, setCurrentCard] = useState(flashCards[0] || null)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
 
   useEffect(() => {
     if (!questions?.length) return
@@ -36,15 +37,21 @@ export default function FlashcardPage() {
   }, [flashCards, currentIndex])
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % flashCards.length)
+    setIsNavigating(true)
     setIsFlipped(false)
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % flashCards.length)
+      setIsNavigating(false)
+    }, 200)
   }
 
   const handlePrev = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? flashCards.length - 1 : prev - 1
-    )
+    setIsNavigating(true)
     setIsFlipped(false)
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev === 0 ? flashCards.length - 1 : prev - 1))
+      setIsNavigating(false)
+    }, 200)
   }
 
   const handleGenerateFlashcards = async () => {
@@ -98,8 +105,7 @@ export default function FlashcardPage() {
               </div>
 
               {/* Back */}
-              <div className="absolute w-full h-full backface-hidden rotate-x-180 flex items-center justify-center rounded-2xl bg-white dark:bg-gray-800 shadow-xl text-2xl text-center px-12"
-              >
+              <div className="absolute w-full h-full backface-hidden rotate-x-180 flex items-center justify-center rounded-2xl bg-white dark:bg-gray-800 shadow-xl text-2xl text-center px-12">
                 <MathRender>{currentCard.answer}</MathRender>
               </div>
             </div>
@@ -113,13 +119,15 @@ export default function FlashcardPage() {
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-center gap-4">
-            <Button variant="outline" onClick={handlePrev} className="cursor-pointer">
+            <Button variant="outline" onClick={handlePrev} className="cursor-pointer" disabled={isNavigating}>
               Previous
             </Button>
             <span className="text-gray-700 dark:text-gray-300 text-lg">
               {currentIndex + 1} / {flashCards.length}
             </span>
-            <Button className="cursor-pointer" onClick={handleNext}>Next</Button>
+            <Button className="cursor-pointer" onClick={handleNext} disabled={isNavigating}>
+              Next
+            </Button>
           </div>
         </>
       )}
