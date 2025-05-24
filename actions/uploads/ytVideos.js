@@ -160,7 +160,7 @@ export async function uploadYoutubeVideo(promptId, url) {
       return
     }
     await generateData(promptId, transcript)
-  } catch {
+  } catch (e) {
     console.log(e)
     await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
   }
