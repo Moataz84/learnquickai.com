@@ -35,7 +35,7 @@ app.prepare().then(() => {
 
   function startGame(gameId, duration, qInterval) {
     let time = (duration * 60)
-    writeGameData(gameId, { started: true })
+    writeGameData(gameId, { started: true, interval: qInterval })
     io.to(gameId).emit("game-started", {users: readGameData(gameId).users, time, interval: qInterval})
     time--
     const interval = setInterval(() => {
@@ -72,10 +72,7 @@ app.prepare().then(() => {
           }
         }
       } else {
-        // Send time
         io.to(gameId).emit("time", time)
-
-        // Send current scores
         const gameFile = join(__dirname, `/temp/game_${gameId}.json`)
         if (existsSync(gameFile)) {
           try {
@@ -85,7 +82,6 @@ app.prepare().then(() => {
             console.error("Error reading scores for emit:", err)
           }
         }
-
         time--
       }
     }, 1000)
@@ -119,7 +115,7 @@ app.prepare().then(() => {
       socket.join(gameId)
       socket.emit("joined-game")
       io.to(gameId).emit("player-joined", room.size)
-      if (data.started) socket.emit("game-started")
+      if (data.started) socket.emit("game-started", {interval: data.interval, users: data.users, time: 300})
     })
 
     socket.on("start-game", data => {
