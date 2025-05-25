@@ -4,8 +4,10 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import WaitingRoom from "@/components/Game/WaitingRoom"
 import { useSession } from "next-auth/react"
+import { usePrompt } from "@/contexts/PromptContext"
 
 export default function JoinGameContent() {
+  const { prompt } = usePrompt()
   const session = useSession()
   const [gameId, setGameId] = useState("")
   const socketRef = useRef(null)  
@@ -33,7 +35,7 @@ export default function JoinGameContent() {
   }, [searchParams])
 
   const handleJoin = () => {
-    socketRef.current.emit("player-join", gameId.toLowerCase().trim())
+    socketRef.current.emit("player-join", {gameId: gameId.toLowerCase().trim(), promptId: prompt.promptId})
   }
 
   return (

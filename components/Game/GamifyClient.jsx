@@ -81,7 +81,7 @@ export default function GamePageContent() {
       {questions.length > 0 && !waiting && (
         <div className="flex gap-3 p-6">
           <button
-            onClick={() => socketRef.current.emit("init-game")}
+            onClick={() => socketRef.current.emit("init-game", prompt.promptId)}
             className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer"
           >
             Start New Game

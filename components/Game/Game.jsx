@@ -99,37 +99,46 @@ export default function KahootGame({ gameId, socket, interval }) {
   }, [currentQuestion])
 
   return (
-    <div className="w-full max-w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6">
-  <h2 className="text-2xl font-bold min-h-[56px]">
-    <MathRender>{currentQuestion?.question}</MathRender>
-  </h2>
+    <div className="w-full max-w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 animate-fade-in">
+      {/* Question */}
+      <h2 className="text-2xl font-bold min-h-[56px] animate-fade-in duration-500">
+        <MathRender>{currentQuestion?.question}</MathRender>
+      </h2>
 
-  <div className="space-y-4">
-    {currentQuestion?.options.map((option) => {
-      return (
-        <button
-          key={option.id}
-          onClick={() => handleAnswer(option)}
-          disabled={selected !== null}
-          className={clsx(
-            "w-full py-4 px-2 text-lg rounded-lg transition cursor-pointer",
-            "text-white",
-            {
-              "bg-green-500 animate-pulse": selected?.id === option.id && option.id === currentQuestion?.answer,
-              "bg-red-500 animate-pulse": selected?.id === option.id && option.id !== currentQuestion?.answer,
-              "bg-blue-500 hover:bg-blue-600": selected === null,
-              "bg-gray-400 cursor-not-allowed": selected !== null && selected?.id !== option.id
-            }
-          )}
-          style={{ minHeight: "60px" }}
-        >
-          <MathRender>{option.text}</MathRender>
-        </button>
-      )
-    })}
-  </div>
-  <div className="text-gray-400 text-sm">Auto-advances every {interval} seconds</div>
-</div>
-
+      {/* Options */}
+      <div className="space-y-4">
+        {currentQuestion?.options.map((option) => {
+          const isSelected = selected?.id === option.id
+          const isCorrect = option.id === currentQuestion?.answer
+          const isWrong = isSelected && !isCorrect
+        
+          return (
+            <button
+              key={option.id}
+              onClick={() => handleAnswer(option)}
+              disabled={selected !== null}
+              className={clsx(
+                "w-full py-4 px-2 text-lg rounded-lg transition-all duration-300 ease-in-out transform",
+                "text-white cursor-pointer",
+                {
+                  "bg-green-500 animate-pulse scale-105": isSelected && isCorrect,
+                  "bg-red-500 animate-pulse scale-105": isWrong,
+                  "bg-blue-500 hover:bg-blue-600 hover:scale-[1.01]": selected === null,
+                  "bg-gray-400 cursor-not-allowed": selected !== null && !isSelected
+                }
+              )}
+              style={{ minHeight: "60px" }}
+            >
+              <MathRender>{option.text}</MathRender>
+            </button>
+          )
+        })}
+      </div>
+      
+      {/* Auto-advance Info */}
+      <div className="text-gray-400 text-sm animate-fade-in delay-500">
+        Auto-advances every {interval} seconds
+      </div>
+    </div>
     )
 }

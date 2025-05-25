@@ -95,19 +95,21 @@ app.prepare().then(() => {
       socket.userId = data.userId
     })
 
-    socket.on("init-game", () => {
+    socket.on("init-game", promptId => {
       const gameId = randomBytes(3).toString("hex")
       socket.join(gameId)
-      writeGameData(gameId, {gameId, started: false, createdBy: socket.userId, users: [{id: socket.userId, name: socket.name, score: 0}]})
+      writeGameData(gameId, {gameId, started: false, createdBy: socket.userId, users: [{id: socket.userId, name: socket.name, score: 0}], promptId})
       io.to(gameId).emit("player-joined", 1)
       socket.emit("send-game-link", gameId)
     })
 
-    socket.on("player-join", gameId => {
+    socket.on("player-join", ({promptId, gameId}) => {
       const room = io.sockets.adapter.rooms.get(gameId)
       const exists = room !== undefined && room.size > 0
+      
       if (!exists) return socket.emit("no-lobby")
       const data = readGameData(gameId)
+      if (data.promptId !== promptId) return socket.emit("no-lobby")
       if (data.users.map(u => u.id).includes(socket.userId)) {
         return socket.emit("no-lobby")
       }

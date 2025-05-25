@@ -19,6 +19,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
   const [leaderBoard, setLeaderBoard] = useState([])
   const [liveLeaderboard, setLiveLeaderboard] = useState([])
   const [interval, setInterval] = useState(0)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     socket?.on("player-joined", num => setPlayers(num))
@@ -45,14 +46,30 @@ export default function WaitingRoom({ socket, show, gameId }) {
   const exitGame = () =>
     (window.location.href = `/notes/${prompt.promptId}`)
 
+  const copyJoinLink = () => {
+    const joinUrl = `${window.location.href}/play-game?gameId=${gameId}`
+    navigator.clipboard.writeText(joinUrl).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   if (!show) return null
 
   return (
     <div className="space-y-4 mx-auto">
       {/* Game Code + Exit Button (inline) */}
-      <div className="flex items-center justify-between font-mono select-text gap-4">
-        <div>
-          Game Code: <b>{gameId}</b>
+      <div className="flex items-center justify-between font-mono select-text gap-10">
+        <div className="flex flex-col items-start gap-2">
+          <span>Game Code: <b>{gameId}</b></span>
+          <button
+            onClick={copyJoinLink}
+            className={`text-sm rounded transition cursor-pointer p-2 ${
+              copied ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
+          >
+            {copied ? '✅ Copied!' : '📋 Copy Join Link'}
+          </button>
         </div>
         <button
           onClick={exitGame}
