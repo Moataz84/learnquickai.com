@@ -92,7 +92,7 @@ export default function FlashcardPage() {
       ) : (
         <>
           {/* Flip Card Container */}
-          <div className="w-full h-[300px] perspective mb-4">
+          <div className="w-full max-w-3xl h-[300px] perspective mb-4">
             <div
               className={`relative w-full h-full duration-500 transform-style preserve-3d ${
                 isFlipped ? "rotate-x-180" : ""
@@ -111,14 +111,14 @@ export default function FlashcardPage() {
             </div>
           </div>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center max-w-3xl">
             Click the card to flip
           </p>
 
-          <Separator className="my-4 w-full" />
+          <Separator className="my-4 w-full max-w-3xl" />
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-4  max-w-3xl">
             <Button variant="outline" onClick={handlePrev} className="cursor-pointer" disabled={isNavigating}>
               Previous
             </Button>

@@ -98,7 +98,7 @@ export default function GamePageContent() {
       <WaitingRoom show={waiting} socket={socketRef?.current} gameId={gameId} />
 
       {questions.length > 0 && waiting && (
-        <div className="flex flex-col gap-4 items-start">
+        <div className="flex flex-col gap-4 items-start mt-2">
           {/* Total Duration Field */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">Total Duration (minutes)</label>

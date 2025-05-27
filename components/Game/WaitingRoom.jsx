@@ -57,7 +57,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
   if (!show) return null
 
   return (
-    <div className="space-y-4 mx-auto">
+    <div className="space-y-4 mx-auto w-2xl">
       {/* Game Code + Exit Button (inline) */}
       <div className="flex items-center justify-between font-mono select-text gap-10">
         <div className="flex flex-col items-start gap-2">

@@ -17,7 +17,7 @@ export default function YoutubeUpload({isDialogOpen, setIsDialogOpen, setModalEr
     if (result.msg === "exceeded") return router.push("/pricing")
     if (result.msg === "limit") return setModalError("Video must not exceed 10 hours in duration")
     if (result.msg === "success") {
-      uploadYoutubeVideo(result.promptId, `https://www.youtube.com/watch?v=${result.ytVideoId}`)
+      uploadYoutubeVideo(result.promptId, `https://www.youtube.com/watch?v=${result.ytVideoId}`, result.length)
       return router.push(`/notes/${result.promptId}`)
     }
   }

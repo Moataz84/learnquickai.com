@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function PromptError() {
   return (
-    <div className="flex flex-col items-center mt-30 mx-auto text-center space-y-6 justify-center">
+    <div className="flex flex-col items-center mt-30 mx-auto text-center space-y-6">
       <FaExclamationTriangle className="w-16 h-16 text-yellow-500 mb-4" />
       <h2 className="text-3xl font-semibold">
         Sorry, we couldn't generate your notes 😔

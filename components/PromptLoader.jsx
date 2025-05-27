@@ -62,7 +62,7 @@ export default function PromptLoader({ number, children, userMessages }) {
   return (
     <div className="flex flex-col items-center min-h-screen my-0 mx-auto text-center space-y-6">
       <h2 className="text-3xl font-semibold mt-25">
-        We're working hard on your document... 🛠️
+        Hang tight! We're processing your document... 🛠️
       </h2>
       <p className="text-lg max-w-md px-4">
         {currentTip}

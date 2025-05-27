@@ -56,18 +56,18 @@ export async function checkVideo(fileId) {
 
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
-  const usage = await getUsage(id)
+  const { seconds: usage, cost } = await getUsage(id)
   const duration = await getVideoDuration(videoPath)
   const totalTime = usage + duration
   const user = await Users.findOne({_id: id})
-  if (!user.active && totalTime > 3600) {
+  if ((!user.active && totalTime > 3600) || cost >= 3.5) {
     unlinkSync(videoPath)
     return {msg: "exceeded"}
   }
   const promptId = v4()
   await Promise.all([
     new Prompts({userId: id, promptId, summary: "", title: "", type: "audio", public: false}).save(),
-    new Usages({userId: id, dateTime: Date.now().toString(), seconds: duration.toString(), promptId, paidFor: true, type: "audio"}).save()
+    new Usages({userId: id, dateTime: Date.now().toString(), seconds: duration.toString(), promptId, cost: (0.18* (duration / 3600)), type: "audio"}).save()
   ])
   return {msg: "success", promptId, videoId, videoPath}
 }

@@ -18,15 +18,11 @@ function shuffle(array) {
   return newArray
 }
 
-function shuffleQuestions(questions) {
-  return shuffle(questions).map(q => ({ ...q, options: shuffle(q.options) }))
-}
-
 export default function KahootGame({ gameId, socket, interval }) {
   const { questions:q } = useQuestions()
-  const [questions, setQuestions] = useState(shuffleQuestions(q))
+  const [questions, setQuestions] = useState(q)
   const session = useSession()
-  const [currentQuestion, setCurrentQuestion] = useState(getRandomQuestion())
+  const [currentQuestion, setCurrentQuestion] = useState(questions[Math.floor(Math.random() * questions.length)])
   const [score, setScore] = useState(0)
   const [selected, setSelected] = useState(null)
   const timerRef = useRef(null)
@@ -45,12 +41,13 @@ export default function KahootGame({ gameId, socket, interval }) {
     audio.play()
   }
 
-  function getRandomQuestion(previousQuestion) {
-    let newQuestion
+  function getRandomQuestion() {
+    const previousQuestion = currentQuestion
+    let newQuestion 
     do {
       newQuestion = questions[Math.floor(Math.random() * questions.length)]
-    } while (newQuestion === previousQuestion && questions.length > 1)
-    return newQuestion
+    } while (newQuestion.answer === previousQuestion?.answer && questions.length > 1)
+    return {...newQuestion, options: shuffle(newQuestion.options)}
   }
 
   function nextQuestion() {
@@ -99,7 +96,7 @@ export default function KahootGame({ gameId, socket, interval }) {
   }, [currentQuestion])
 
   return (
-    <div className="w-full max-w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 animate-fade-in">
+    <div className="w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 animate-fade-in">
       {/* Question */}
       <h2 className="text-2xl font-bold min-h-[56px] animate-fade-in duration-500">
         <MathRender>{currentQuestion?.question}</MathRender>

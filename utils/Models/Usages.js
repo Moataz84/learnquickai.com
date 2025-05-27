@@ -5,7 +5,7 @@ const schema = new Schema({
   promptId: String,
   dateTime: String,
   seconds: String,
-  paidFor: Boolean,
+  cost: Number,
   type: String
 })
 

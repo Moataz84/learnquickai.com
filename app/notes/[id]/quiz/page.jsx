@@ -157,7 +157,7 @@ export default function QuizPage() {
                 <button
                   key={option.id}
                   onClick={() => handleAnswer(option.id)}
-                  className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white w-full py-4 text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer ${
+                  className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white w-full py-4 px-2 text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer ${
                     isCorrect ? "border-4 border-green-500 animate-pulse" : ""
                   } ${isWrong ? "border-4 border-red-500 animate-pulse" : ""}`}
                   style={{ minHeight: "60px" }}

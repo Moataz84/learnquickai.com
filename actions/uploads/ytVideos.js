@@ -57,7 +57,7 @@ function getVideoIdFromUrl(url) {
 export async function checkYTVideo(url) {
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
-  const usage = await getUsage(id)
+  const { seconds: usage, cost } = await getUsage(id)
   const user = await Users.findOne({_id: id})
 
   try {
@@ -68,7 +68,7 @@ export async function checkYTVideo(url) {
     if (!duration) return {msg: "This video is unavailable"}
     const length = iso8601DurationToSeconds(duration)
     const totalTime = length + usage
-    if (!user.active && totalTime > 3600) {
+    if ((!user.active && totalTime > 3600) || cost >= 3.5) {
       return {msg: "exceeded"}
     }
     if (length > (3600 * 10)) {
@@ -76,10 +76,10 @@ export async function checkYTVideo(url) {
     }
     const promptId = v4()
     await Promise.all([
-      new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false}).save(),
-      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, paidFor: false, type: "video"}).save()
+      new Prompts({userId: id, promptId, summary: "", title: "", type: "yt", public: false, cost: 0}).save(),
+      new Usages({userId: id, dateTime: Date.now().toString(), seconds: length, promptId, type: "video"}).save()
     ])
-    return {msg: "success", promptId, ytVideoId: videoId}
+    return {msg: "success", promptId, ytVideoId: videoId, length}
   } catch (e) {
     console.log(e)
     return {msg: "This video is unavailable"}
@@ -148,18 +148,17 @@ async function downloadVideo(url) {
   return null
 }
 
-export async function uploadYoutubeVideo(promptId, url) {
+export async function uploadYoutubeVideo(promptId, url, length) {
   try {
     const transcript = await getCaptions(url)
     if (!transcript) {
       const r = await downloadVideo(url)
-      console.log(transcript, r)
       if (!r) {
         await Prompts.findOneAndUpdate({promptId}, {$set: {summary: "failed"}})
         return
       }
       await generateTranscriptAndData(promptId, r.videoPath, r.videoId)
-      await Usages.findOneAndUpdate({promptId}, {$set: {paidFor: true}})
+      await Usages.findOneAndUpdate({promptId}, {$inc: {cost: (0.18 * (length / 3600))}})
       return
     }
     await generateData(promptId, transcript)

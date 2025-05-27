@@ -13,5 +13,11 @@ export default async function getUsage(userId) {
     }
   })
 
-  return results.reduce((sum, entry) => sum + parseFloat(entry.seconds), 0)
+  return {
+    seconds: results.reduce((sum, entry) => sum + parseFloat(entry.seconds), 0), 
+    cost: results.reduce((sum, entry) => {
+      if (entry.cost !== undefined) return sum + parseFloat(entry.cost)     
+      return sum
+    }, 0)
+  }
 }

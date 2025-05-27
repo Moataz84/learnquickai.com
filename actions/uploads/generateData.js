@@ -7,6 +7,7 @@ import { unlinkSync } from "fs"
 import { OpenAI } from "openai"
 import { join } from "path"
 import { createReadStream } from "fs"
+import Usages from "@/utils/Models/Usages"
 
 setFfmpegPath(ffmpegPath)
 setFfprobePath(ffprobePath.path)
@@ -169,7 +170,10 @@ Add **as many sections as needed** to cover all topics thoroughly!
   const match = summary.match(/^\*\*Title:\*\*\s*\n(.*)/m)
   const rawTitle = match[1]
   const title = rawTitle.replace(/\*\*(.*?)\*\*/g, '$1')
-  await Prompts.findOneAndUpdate({promptId}, {$set: {title, summary, transcript}})
+  await Promise.all([
+    Prompts.findOneAndUpdate({promptId}, {$set: {title, summary, transcript}}),
+    Usages.findOneAndUpdate({promptId}, {$inc: {cost: ((response.usage.completion_tokens * 6.0e-7) + (response.usage.prompt_tokens * 1.5e-7))}})
+  ])
 }
 
 export async function generateTranscriptAndData(promptId, videoPath, videoId) {

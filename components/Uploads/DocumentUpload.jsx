@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { FaFileAlt } from "react-icons/fa"
-import { uploadChunk, checkDocument, generateDocumentData } from "@/actions/uploads/documentUpload"
+import { uploadChunk, checkDocument, generateDocumentData, generateTXTData } from "@/actions/uploads/documentUpload"
 
 export default function DocumentUpload({ setModalError, loading, setLoading }) {
   const router = useRouter()
@@ -46,7 +46,8 @@ export default function DocumentUpload({ setModalError, loading, setLoading }) {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "application/vnd.ms-powerpoint"
+      "application/vnd.ms-powerpoint",
+      "text/plain"
     ].includes(file.type)
 
   const handleDrop = (e) => {
@@ -61,11 +62,11 @@ export default function DocumentUpload({ setModalError, loading, setLoading }) {
     if (loading) return
     setLoading(true)
     const file = e.target?.files?.[0]
-    if (!file || !isValidDoc(file)) return setModalError("Only PDF, DOC/DOCX, or PPTX files are allowed")
+    if (!file || !isValidDoc(file)) return setModalError("Only PDF, DOC/DOCX, PPTX, or TXT files are allowed")
     
-    const MAX_FILE_SIZE = 20 * 1024 * 1024
+    const MAX_FILE_SIZE = 10 * 1024 * 1024
     if (file.size > MAX_FILE_SIZE) {
-      return setModalError("File size exceeds the 20MB limit. Please upload a smaller file")
+      return setModalError("File size exceeds the 10MB limit. Please upload a smaller file")
     }
     setUploading(true)
     setUploadProgress(0)
@@ -94,8 +95,13 @@ export default function DocumentUpload({ setModalError, loading, setLoading }) {
         document.getElementById("doc-upload").value = ""
         const result = await checkDocument(fileId, fileExtension)
         setLoading(false)
+        if (result.msg === "exceeded") return router.push("/pricing")
         if (result.msg === "success") {
-          generateDocumentData(result.promptId, result.documentPath)
+          if (file.fileExtension === "txt") {
+            generateTXTData(result.promptId, result.documentPath)
+          } else {
+            generateDocumentData(result.promptId, result.documentPath, result.pId)
+          }
           return router.push(`/notes/${result.promptId}`)
         }
       }
@@ -124,7 +130,7 @@ export default function DocumentUpload({ setModalError, loading, setLoading }) {
       <input
         id="doc-upload"
         type="file"
-        accept=".pdf,.doc,.docx,.pptx"
+        accept=".pdf,.doc,.docx,.pptx,.txt"
         className="hidden"
         onChange={handleUpload}
         disabled={uploading}

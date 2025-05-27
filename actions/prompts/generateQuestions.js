@@ -2,6 +2,7 @@
 import { getPrompt } from "@/actions/prompts/getPrompt"
 import { authConfig } from "@/utils/auth"
 import Questions from "@/utils/Models/Questions"
+import Usages from "@/utils/Models/Usages"
 import { getServerSession } from "next-auth"
 import OpenAI from "openai"
 
@@ -52,6 +53,9 @@ ${prompt.summary}`
   })
 
   const questions = JSON.parse(response.choices[0].message.content.replaceAll("\\", "\\\\").replaceAll("\\\\\\\\", "\\\\")).map(q => ({...q, userId, promptId, question: q.question.replaceAll("\\", "\\\\"), options: q.options.map(o => ({...o, text: o.text.replaceAll("\\", "\\\\")}))}))
-  await Questions.insertMany(questions)
+  await Promise.all([
+    Questions.insertMany(questions),
+    Usages.findOneAndUpdate({promptId}, {$inc: {cost: ((response.usage.completion_tokens * 6.0e-7) + (response.usage.prompt_tokens * 1.5e-7))}})
+  ])
   return questions
 }
