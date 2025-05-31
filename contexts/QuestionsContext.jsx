@@ -1,23 +1,28 @@
 "use client"
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, useRef } from "react"
 import getQuestions from "@/actions/prompts/getQuestions"
 import { usePathname } from "next/navigation"
 
 const QuestionsContext = createContext(null)
 
-export function QuestionsProvider({ promptId, initialQuestions, children }) {
+export function QuestionsProvider({ promptId, initialQuestions, purpose, children }) {
   const pathname = usePathname()
   const [questions, setQuestions] = useState(initialQuestions)
-  const [type, setType] = useState("id")
+  const [type, setType] = useState(purpose)
+  const hasMounted = useRef(false)
 
   useEffect(() => {
-    if (pathname.includes("/gamify")) return setType("nid")
-    setType("id")
+    const newPurpose = pathname.includes("quiz") ? "quiz" : pathname.includes("flashcards") ? "flashcards" : ""
+    setType(newPurpose)
   }, [pathname])
 
   useEffect(() => {
     async function fetchData() {
-      const result = await getQuestions(promptId, type)
+      if (!hasMounted.current) {
+        hasMounted.current = true
+        return
+      }
+      const result = await getQuestions(promptId)
       setQuestions(result)
     }
     fetchData()

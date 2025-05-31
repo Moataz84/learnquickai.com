@@ -5,7 +5,9 @@ const schema = new Schema({
   userId: String,
   question: String,
   answer: String,
-  options: Array
+  options: Array,
+  quizVisable: Boolean,
+  flashcardVisable: Boolean
 })
 
 const Questions = models.questions || model("questions", schema)

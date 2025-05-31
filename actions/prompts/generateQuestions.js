@@ -4,58 +4,102 @@ import { authConfig } from "@/utils/auth"
 import Questions from "@/utils/Models/Questions"
 import Usages from "@/utils/Models/Usages"
 import { getServerSession } from "next-auth"
+import { zodTextFormat } from "openai/helpers/zod"
 import OpenAI from "openai"
+import { z } from "zod"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API
 })
 
-export async function generateQuiz(promptId) {
+const questionsSchema = z.object({
+  questions: z.array(z.object({
+    question: z.string(),
+    answer: z.enum(["A", "B", "C", "D"]),
+    options: z.array(z.object({
+      id: z.enum(["A", "B", "C", "D"]),
+      text: z.string()
+    }))
+  }))
+})
+
+export async function generateQuestions(promptId) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
-  await Questions.deleteMany({promptId, userId})
   const prompt = await getPrompt(promptId)
-  const message = `Generate 10 high-quality multiple-choice questions based on the summary below.
+  const message = `You are an expert tutor generating multiple-choice quiz questions from an educational video **summary**.
 
-Requirements:
-- Questions must test **specific understanding**, facts, or reasoning **explicitly stated or implied** in the summary.
-- Use **exact examples or terminology** from the summary wherever possible.
-- Ensure that each question is clear, focused, and only has **one correct answer**.
-- Avoid overly generic or vague questions.
-- Mix factual recall, conceptual understanding, and light inference.
-- Questions must be unique and should be unlikly to be generated again from the same prompt.
+Your task is to generate 10 high-quality multiple-choice questions **related to the concepts in the summary**, but:
 
-Format the question as a JSON object:
+📌 **Do not copy examples or exact values** from the summary if the subject is:
+- Mathematics
+- Physics
+- Engineering
+(Use similar but original numbers, functions, or problems)
+
+📌 For **memorization-heavy subjects** (e.g. biology, history, terminology-based topics), it's acceptable to use exact information from the summary.
+
+✅ Every question should:
+- Be directly related to the concepts or techniques explained in the summary
+- Be unique and unlikely to repeat on regeneration
+- Include exactly one correct answer
+- Use LaTeX formatting inside for all mathematical notation
+
+🧠 Vary the difficulty and reasoning depth:
+- Some factual/definition-based
+- Some conceptual
+- Some application-level
+
+📦 Return exactly 10 questions in this JSON format:
+
 {
-  "question": "A concise and relevant question from the summary.",
-  "options": [
-    { "id": "A", "text": "Option A" },
-    { "id": "B", "text": "Option B" },
-    { "id": "C", "text": "Option C" },
-    { "id": "D", "text": "Option D" }
-  ],
-  "answer": "A"
+  "questions": [
+    {
+      "question": "string (LaTeX allowed should include opeing and closing tags)",
+      "answer": "A" | "B" | "C" | "D",
+      "options": [
+        { "id": "A", "text": "..." },
+        { "id": "B", "text": "..." },
+        { "id": "C", "text": "..." },
+        { "id": "D", "text": "..." }
+      ]
+    },
+    ...
+  ]
 }
 
-Only return a **valid JSON string of 10 question object** with no extra commentary or markdown and use latex if needed.
+Do **not** include explanations or extra commentary.  
+Only output the final JSON object.
 
 Summary:
 ${prompt.summary}`
 
-  const response = await openai.chat.completions.create({
-    messages: [
+  const response = await openai.responses.parse({
+    input: [
       {
         role: "user",
         content: message,
       },
     ],
     model: "gpt-4o-mini",
+    text: {
+      format: zodTextFormat(questionsSchema, "questions")
+    }
   })
 
-  const questions = JSON.parse(response.choices[0].message.content.replaceAll("\\", "\\\\").replaceAll("\\\\\\\\", "\\\\")).map(q => ({...q, userId, promptId, question: q.question.replaceAll("\\", "\\\\"), options: q.options.map(o => ({...o, text: o.text.replaceAll("\\", "\\\\")}))}))
+  const questions = response.output_parsed.questions.map(q => ({...q, quizVisable: true, flashcardVisable: true, userId, promptId, question: q.question.replaceAll("\\", "\\\\"), options: q.options.map(o => ({...o, text: o.text.replaceAll("\\", "\\\\")}))}))
+
   await Promise.all([
     Questions.insertMany(questions),
-    Usages.findOneAndUpdate({promptId}, {$inc: {cost: ((response.usage.completion_tokens * 6.0e-7) + (response.usage.prompt_tokens * 1.5e-7))}})
+    Usages.findOneAndUpdate({promptId}, {$inc: {cost: ((response.usage.input_tokens * 6.0e-7) + (response.usage.output_tokens * 1.5e-7))}})
   ])
   return questions
+}
+
+export async function deleteFlashcard(id) {
+  await Questions.findOneAndUpdate({_id: id}, {$set: {flashcardVisable: false}})
+}
+
+export async function deleteQuestion(id) {
+  await Questions.findOneAndUpdate({_id: id}, {$set: {quizVisable: false}})
 }

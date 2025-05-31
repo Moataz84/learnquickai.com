@@ -9,6 +9,7 @@ import { PromptProvider } from "@/contexts/PromptContext"
 import getMessages from "@/actions/prompts/getMessages"
 import { QuestionsProvider } from "@/contexts/QuestionsContext"
 import getQuestions from "@/actions/prompts/getQuestions"
+import { headers } from "next/headers"
 
 export const dynamic = "force-dynamic"
 
@@ -30,7 +31,11 @@ export default async function Layout({ params, children }) {
   const session = await getServerSession(authConfig)
   if (!prompt.public && prompt.userId !== session?.user?.id) return <NotFound />
   const messages = await getMessages(id)
-  const questions = await getQuestions(id, "id")
+  const questions = await getQuestions(id)
+  const headerList = await headers()
+  const pathname = headerList.get("x-current-path")
+  const purpose = pathname.includes("quiz") ? "quiz" : pathname.includes("flashcards") ? "flashcards" : ""
+
   return (
     <div className="flex">
       <SideMenu promptId={id} />
@@ -39,7 +44,7 @@ export default async function Layout({ params, children }) {
         <PromptError /> 
       : 
       <PromptProvider initialPrompt={prompt}>
-        <QuestionsProvider promptId={id} initialQuestions={questions}>
+        <QuestionsProvider promptId={id} initialQuestions={questions} purpose={purpose}>
           <PromptLoader children={children} number={Math.floor(Math.random() * 10)} userMessages={messages} />
         </QuestionsProvider>
       </PromptProvider>

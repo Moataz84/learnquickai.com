@@ -1,16 +1,24 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import MathRender from "@/components/MathRender"
-import { generateQuiz } from "@/actions/prompts/generateQuestions"
+import { deleteFlashcard, generateQuestions } from "@/actions/prompts/generateQuestions"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
+import shuffle from "@/actions/shuffle"
 
 export default function FlashcardPage() {
+  const hasMounted = useRef(false)
   const { prompt } = usePrompt()
   const { questions, setQuestions } = useQuestions()
-  const [flashCards, setFlashCards] = useState(questions.map(q => ({question: q.question, answer: q.options.find(a => a.id === q.answer).text})))
+  const [flashCards, setFlashCards] = useState(shuffle(
+    questions.map((q) => ({
+      id: q.id,
+      question: q.question,
+      answer: q.options.find((a) => a.id === q.answer).text,
+    }))
+  ))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentCard, setCurrentCard] = useState(flashCards[0] || null)
   const [isFlipped, setIsFlipped] = useState(false)
@@ -18,12 +26,17 @@ export default function FlashcardPage() {
   const [isNavigating, setIsNavigating] = useState(false)
 
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true
+      return
+    }
     if (!questions?.length) return
-    const formatted = questions.map(q => ({
+    const formatted = questions.map((q) => ({
+      id: q.id,
       question: q.question,
-      answer: q.options.find(a => a.id === q.answer)?.text
+      answer: q.options.find((a) => a.id === q.answer)?.text,
     }))
-    setFlashCards(formatted)
+    setFlashCards(shuffle(formatted))
     setCurrentIndex(0)
     setCurrentCard(formatted[0] || null)
   }, [questions])
@@ -54,10 +67,10 @@ export default function FlashcardPage() {
     }, 200)
   }
 
-  const handleGenerateFlashcards = async () => {
+  const replaceFlashcards = async () => {
     setIsLoading(true)
     try {
-      const generated = await generateQuiz(prompt.promptId)
+      const generated = await generateQuestions(prompt.promptId)
       const formatted = generated.map((q) => ({
         question: q.question,
         answer: q.options.find((a) => a.id === q.answer).text,
@@ -73,6 +86,33 @@ export default function FlashcardPage() {
     }
   }
 
+  const addMoreFlashcards = async () => {
+    setIsLoading(true)
+    try {
+      const generated = await generateQuestions(prompt.promptId)
+      const formatted = generated.map((q) => ({
+        question: q.question,
+        answer: q.options.find((a) => a.id === q.answer).text,
+      }))
+      const merged = [...flashCards, ...formatted]
+      setFlashCards(merged)
+      setQuestions((prev) => [...prev, ...generated])
+    } catch (err) {
+      console.error("Failed to add flashcards", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDeleteFlashcard = async () => {
+    const updated = flashCards.filter(i => i.id !== currentCard.id)
+    setFlashCards(updated)
+    setCurrentIndex((prev) =>
+      prev >= updated.length ? Math.max(0, updated.length - 1) : prev
+    )
+    await deleteFlashcard(currentCard.id)
+  }
+
   return (
     <div className="min-h-screen p-6 sm:p-10 md:p-14 dark:bg-gray-900 w-full">
       <h1 className="text-4xl font-bold mb-10 text-gray-900 dark:text-white">
@@ -80,14 +120,13 @@ export default function FlashcardPage() {
       </h1>
 
       {!flashCards?.length || !currentCard ? (
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <button
-            onClick={handleGenerateFlashcards}
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg disabled:opacity-50 cursor-pointer "
-          >
+        <div className="flex flex-col items-start justify-center space-y-6">
+          <Button onClick={replaceFlashcards} disabled={isLoading} className="cursor-pointer">
             {isLoading ? "Generating..." : "Generate Flashcards"}
-          </button>
+          </Button>
+          <p className="text-muted-foreground text-base">
+            😅 Looks like you have no flashcards yet. Click the button above to get started!
+          </p>
         </div>
       ) : (
         <>
@@ -117,17 +156,30 @@ export default function FlashcardPage() {
 
           <Separator className="my-4 w-full max-w-3xl" />
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-center gap-4  max-w-3xl">
-            <Button variant="outline" onClick={handlePrev} className="cursor-pointer" disabled={isNavigating}>
-              Previous
-            </Button>
-            <span className="text-gray-700 dark:text-gray-300 text-lg">
-              {currentIndex + 1} / {flashCards.length}
-            </span>
-            <Button className="cursor-pointer" onClick={handleNext} disabled={isNavigating}>
-              Next
-            </Button>
+          {/* Navigation & Actions */}
+          <div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-center gap-4">
+              <Button variant="outline" className="cursor-pointer" onClick={handlePrev} disabled={isNavigating}>
+                Previous
+              </Button>
+              <span className="text-gray-700 dark:text-gray-300 text-lg">
+                {currentIndex + 1} / {flashCards.length}
+              </span>
+              <Button onClick={handleNext} className="cursor-pointer" disabled={isNavigating}>
+                Next
+              </Button>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-4 mt-4">
+              <Button variant="destructive" className="cursor-pointer" onClick={handleDeleteFlashcard}>
+                Delete Flashcard
+              </Button>
+              <Button onClick={addMoreFlashcards} className="cursor-pointer" disabled={isLoading}>
+                {isLoading ? "Adding..." : "Generate Additional Flashcards"}
+              </Button>
+            </div>
           </div>
         </>
       )}

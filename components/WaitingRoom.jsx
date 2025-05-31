@@ -1,7 +1,7 @@
 "use client"
 import { FaTrophy } from "react-icons/fa"
 import { useEffect, useState } from "react"
-import KahootGame from "@/components/Game/Game"
+import KahootGame from "@/components/Game"
 import { usePrompt } from "@/contexts/PromptContext"
 
 function formatTime(seconds) {
@@ -91,6 +91,12 @@ export default function WaitingRoom({ socket, show, gameId }) {
         )}
       </div>
 
+      {!gameStarted && !gameEnded && players > 0 && (
+        <div className="text-center mt-6 text-gray-700 dark:text-gray-300 text-lg font-medium animate-pulse">
+          ⏳ Waiting for the host to start the game...
+        </div>
+      )}
+
       {/* Live Leaderboard */}
       {gameStarted && (
         <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -119,7 +125,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
 
       {/* Final Leaderboard */}
       {gameEnded && (
-        <div className="flex flex-col bg-gray-100 dark:bg-gray-900 mt-5">
+        <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 mt-5">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-md w-full text-center space-y-6">
             <div className="flex flex-col items-center space-y-2">
               <FaTrophy size={48} className="text-yellow-500" />

@@ -1,4 +1,5 @@
 import getUser from "@/actions/auth/get-user"
+import ChangePassword from "@/components/ChangePassword"
 import SideMenu from "@/components/SideMenu"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -21,6 +22,7 @@ export default async function AccountPage() {
           </p>
 
           <div className="space-y-6 text-sm text-muted-foreground ">
+
             {/* Subscription Info */}
             <div className="border border-border p-4 rounded-lg text-left bg-white dark:bg-gray-800">
               <p className="mb-1">
@@ -64,6 +66,9 @@ export default async function AccountPage() {
                 </p>
               </div>
             </div>
+
+            {/* Change Password */}
+            <ChangePassword />
           </div>
         </div>
       </div>

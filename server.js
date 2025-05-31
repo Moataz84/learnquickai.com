@@ -145,8 +145,7 @@ app.prepare().then(() => {
           }
           const data = readGameData(room)
           if (data.createdBy === socket.userId && !data.started) {
-            io.to(room).emit("game-started")
-            startGame(room, 4)
+            startGame(room, 5, 7)
           }
           writeGameData(room, {started: true, users: [...data.users.filter(user => user.id !== socket.userId)]})
           io.to(room).emit("player-joined", io.sockets.adapter.rooms.get(room).size - 1)

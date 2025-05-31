@@ -1,23 +1,13 @@
 "use client"
-import { generateQuiz } from "@/actions/prompts/generateQuestions"
+import { generateQuestions } from "@/actions/prompts/generateQuestions"
+import { deleteQuestion } from "@/actions/prompts/generateQuestions"
 import { useState, useEffect, useRef } from "react"
-import { FaRegQuestionCircle, FaClipboardList, FaArrowLeft, FaArrowRight } from "react-icons/fa"
+import { FaRegQuestionCircle, FaClipboardList } from "react-icons/fa"
 import MathRender from "@/components/MathRender"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
-
-function shuffle(array) {
-  const newArray = [...array]
-  const length = newArray.length
-
-  for (let start = 0; start < length; start++) {
-    const randomPosition = Math.floor((newArray.length - start) * Math.random())
-    const randomItem = newArray.splice(randomPosition, 1)
-    newArray.push(...randomItem)
-  }
-
-  return newArray
-}
+import { Button } from "@/components/ui/button"
+import shuffle from "@/actions/shuffle"
 
 function shuffleQuestions(questions) {
   return shuffle(questions).map(q => ({ ...q, options: shuffle(q.options) }))
@@ -52,10 +42,10 @@ export default function QuizPage() {
     }
   }, [questions])
 
-  async function handleGenerateQuiz() {
+  async function handleGenerateQuestions() {
     setIsLoading(true)
     try {
-      const generatedQuiz = await generateQuiz(prompt.promptId)
+      const generatedQuiz = await generateQuestions(prompt.promptId)
       setQuestions(generatedQuiz)
       setQuizData(generatedQuiz)
       setCurrentQuestionIndex(0)
@@ -64,6 +54,23 @@ export default function QuizPage() {
       console.error("Quiz generation failed", error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function handleDeleteQuestion(id) {
+    try {
+      await deleteQuestion(id)
+      const updated = quizData.filter(q => q.id !== id)
+      setQuestions(updated)
+      setQuizData(updated)
+      if (updated.length === 0) {
+        setIsQuizStarted(false)
+        setCurrentQuestionIndex(0)
+      } else if (currentQuestionIndex >= updated.length) {
+        setCurrentQuestionIndex(Math.max(0, updated.length - 1))
+      }
+    } catch (error) {
+      console.error("Failed to delete question", error)
     }
   }
 
@@ -109,28 +116,25 @@ export default function QuizPage() {
           <h2 className="text-3xl font-bold text-center mt-8">
             Generate Your Quiz or Start Interactive Quiz
           </h2>
-          <div className="flex space-x-6 mt-6 justify-center">
-            <button
-              onClick={handleGenerateQuiz}
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+            <Button
+              variant="outline"
+              className="cursor-pointer flex items-center gap-2"
+              onClick={handleGenerateQuestions}
               disabled={isLoading}
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg flex items-center hover:bg-blue-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaClipboardList className="mr-2" />
-              {isLoading ? "Generating..." : "Generate Quiz"}
-            </button>
-            <button
+              <FaClipboardList />
+              {isLoading ? "Generating..." : questions.length > 0? "Generate Additional Questions" : "Generate Flashcards"}
+            </Button>
+            <Button
+              className="cursor-pointer flex items-center gap-2"
               onClick={handleStartQuiz}
               disabled={!quizData || isLoading}
-              className={`bg-green-600 text-white px-8 py-4 rounded-lg flex items-center hover:bg-green-700 transition cursor-pointer ${
-                !quizData || isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
             >
-              <FaRegQuestionCircle className="mr-2" /> Start Interactive Quiz
-            </button>
+              <FaRegQuestionCircle />
+              Start Quiz
+            </Button>
           </div>
-          {isLoading && (
-            <div className="text-lg mt-4">Loading quiz questions...</div>
-          )}
         </>
       ) : (
         <div className="w-full max-w-2xl">
@@ -138,17 +142,20 @@ export default function QuizPage() {
             <h2 className="text-2xl font-semibold">
               Question {currentQuestionIndex + 1} / {quizData.length}
             </h2>
-            <button
+            <Button
+              variant="destructive"
               onClick={handleRetryQuiz}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition cursor-pointer"
+              className="cursor-pointer"
             >
               End Quiz
-            </button>
+            </Button>
           </div>
-          <div className="text-xl mt-4 h-16 overflow-hidden">
+
+          <div className="text-xl mt-4 h-16 mb-6">
             <MathRender>{quizData[currentQuestionIndex].question}</MathRender>
           </div>
-          <div className="space-y-4 mt-6">
+
+          <div className="space-y-4">
             {quizData[currentQuestionIndex].options.map((option) => {
               const answer = userAnswers[currentQuestionIndex]
               const isCorrect = answer?.correct && option.id === quizData[currentQuestionIndex].answer
@@ -157,33 +164,51 @@ export default function QuizPage() {
                 <button
                   key={option.id}
                   onClick={() => handleAnswer(option.id)}
-                  className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white w-full py-4 px-2 text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer ${
-                    isCorrect ? "border-4 border-green-500 animate-pulse" : ""
-                  } ${isWrong ? "border-4 border-red-500 animate-pulse" : ""}`}
-                  style={{ minHeight: "60px" }}
+                  className={`w-full py-4 px-2 text-lg rounded-lg transition cursor-pointer
+                    ${isCorrect ? "border-4 border-green-500 animate-pulse" : ""}
+                    ${isWrong ? "border-4 border-red-500 animate-pulse" : ""}
+                    bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600`}
                 >
                   <MathRender>{option.text}</MathRender>
                 </button>
               )
             })}
           </div>
-          <div className="mt-6 flex justify-between space-x-4">
-            <button
-              onClick={handlePrevQuestion}
-              disabled={currentQuestionIndex === 0}
-              className="bg-gray-300 dark:bg-gray-600 text-black dark:text-white px-6 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 disabled:opacity-50 cursor-pointer flex items-center"
-            >
-              <FaArrowLeft className="mr-2" />
-              Previous
-            </button>
-            <button
-              onClick={handleNextQuestion}
-              disabled={currentQuestionIndex + 1 >= quizData.length}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer flex items-center"
-            >
-              Next
-              <FaArrowRight className="ml-2" />
-            </button>
+
+          {/* Controls */}
+          <div className="flex flex-col items-center justify-center gap-4 mt-8 max-w-3xl mx-auto">
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                onClick={handlePrevQuestion}
+                disabled={currentQuestionIndex === 0}
+              >
+                Previous
+              </Button>
+              <span className="text-gray-700 dark:text-gray-300 text-lg">
+                {currentQuestionIndex + 1} / {quizData.length}
+              </span>
+              <Button
+                className="cursor-pointer"
+                onClick={handleNextQuestion}
+                disabled={currentQuestionIndex + 1 >= quizData.length}
+              >
+                Next
+              </Button>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-4 mt-4">
+              <Button
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={() => handleDeleteQuestion(quizData[currentQuestionIndex].id)}
+              >
+                Delete Question
+              </Button>
+            </div>
           </div>
         </div>
       )}

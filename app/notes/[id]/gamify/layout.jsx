@@ -1,11 +1,12 @@
 import { getPrompt } from "@/actions/prompts/getPrompt"
+import AuthSessionProvider from "@/components/AuthSession"
 import Link from "next/link"
 
 export default async function Layout({ params, children }) {
   const { id } = await params
   const prompt = await getPrompt(id)
 
-  if (prompt.public) return children
+  if (prompt.public) return <AuthSessionProvider>{children}</AuthSessionProvider>
   return (
     <div className="flex flex-col items-center mt-24 mx-auto text-center space-y-6 px-6">
       <h2 className="text-3xl font-semibold">

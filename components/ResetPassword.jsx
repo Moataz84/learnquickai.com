@@ -15,7 +15,7 @@ export default function ResetPassword() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   
-  async function sendLinkClient(e) {
+  async function resetPasswordClient(e) {
     e.preventDefault()
     setError("")
     if (!password || !repeatPassword) {
@@ -37,27 +37,45 @@ export default function ResetPassword() {
 
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center">
-      <div className="w-sm mx-auto p-4 space-y-4 bg-white rounded-lg shadow-md text-gray-600 mb-10 border-black border-1 relative overflow-hidden">
-        { loading? <div className="loading"></div> : <></> }        
-        <h2 className="text-2xl font-bold text-center text-black pt-2">Forgot Password</h2>
+  <div className="w-sm mx-auto p-6 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-600 dark:text-gray-300 mb-10 relative overflow-hidden">
+    {loading && <div className="loading"></div>}
 
-        <div>
-          <Label htmlFor="password" className="mb-2">New Password</Label>
-          <Input id="password" type="password" placeholder="Enter your password" onChange={e => setPassword(e.target.value)} onFocus={() => setError("")} />
-        </div>
+    <h2 className="text-2xl font-bold text-center text-black dark:text-white pt-2">
+      Forgot Password
+    </h2>
 
-        <div>
-          <Label htmlFor="password" className="mb-2">Repeat New Password</Label>
-          <Input id="password" type="password" placeholder="Enter your password" onChange={e => setRepeatPassword(e.target.value)} onFocus={() => setError("")} />
-        </div>
-
-
-        {/* Submit Button */}
-        <Button className="w-full cursor-pointer" onClick={sendLinkClient}>Submit</Button>
-
-        <p className="text-sm text-red-700 mt-3 h-8">{error !== ""? error: ""}</p>
-
-      </div>
+    {/* New Password */}
+    <div>
+      <Label htmlFor="password" className="mb-2">New Password</Label>
+      <Input
+        id="password"
+        type="password"
+        placeholder="Enter your password"
+        onChange={e => setPassword(e.target.value)}
+        onFocus={() => setError("")}
+      />
     </div>
+
+    {/* Repeat New Password */}
+    <div>
+      <Label htmlFor="repeat-password" className="mb-2">Repeat New Password</Label>
+      <Input
+        id="repeat-password"
+        type="password"
+        placeholder="Enter your password again"
+        onChange={e => setRepeatPassword(e.target.value)}
+        onFocus={() => setError("")}
+      />
+    </div>
+
+    {/* Submit Button */}
+    <Button className="w-full cursor-pointer" onClick={resetPasswordClient}>
+      Submit
+    </Button>
+
+    <p className="text-sm text-red-700 mt-3 h-8">{error || ""}</p>
+  </div>
+</div>
+
   )
 }
