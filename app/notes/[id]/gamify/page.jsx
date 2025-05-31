@@ -20,7 +20,7 @@ export default function GamePage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [duration, setDuration] = useState(5)
   const [interval, setInterval] = useState(7)
-  const [hideGenerate, setHideGenerate] = useState(questions.length === 30? true : false)
+  const [hideGenerate, setHideGenerate] = useState()
 
   const isValid = duration >= 1 && duration <= 7 && interval >= 2 && interval <= 30
   const canStartGame = isValid && !isGenerating && questions.length > 0
@@ -35,6 +35,10 @@ export default function GamePage() {
 
     return () => socketRef.current.disconnect()
   }, [])
+
+  useEffect(() => {
+    setHideGenerate(questions.length === 30? true : false)
+  }, [questions])
 
   useEffect(() => {
     if (session.data?.user?.id) {

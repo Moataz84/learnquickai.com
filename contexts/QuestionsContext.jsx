@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation"
 
 const QuestionsContext = createContext(null)
 
-export function QuestionsProvider({ promptId, initialQuestions, purpose, children }) {
+export function QuestionsProvider({ promptId, initialQuestions, children }) {
   const pathname = usePathname()
   const [questions, setQuestions] = useState(initialQuestions)
-  const [type, setType] = useState(purpose)
+  const [type, setType] = useState("")
   const hasMounted = useRef(false)
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function QuestionsProvider({ promptId, initialQuestions, purpose, childre
         hasMounted.current = true
         return
       }
-      const result = await getQuestions(promptId)
+      const result = await getQuestions(promptId, type)
       setQuestions(result)
     }
     fetchData()

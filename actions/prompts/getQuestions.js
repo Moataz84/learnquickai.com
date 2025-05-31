@@ -2,13 +2,9 @@
 import { authConfig } from "@/utils/auth"
 import Questions from "@/utils/Models/Questions"
 import { getServerSession } from "next-auth"
-import { headers } from "next/headers"
 
-export default async function getQuestions(promptId) {
+export default async function getQuestions(promptId, purpose = "") {
   let questions = []
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path")
-  const purpose = pathname.includes("quiz") ? "quiz" : pathname.includes("flashcards") ? "flashcards" : ""
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
   if (purpose === "quiz") {

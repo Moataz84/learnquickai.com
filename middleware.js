@@ -6,16 +6,11 @@ import connectDB from "@/utils/db"
 
 export async function middleware(request) {
   const base = new URL(request.url)
-  const headers = new Headers(request.headers)
-  headers.set("x-current-path", request.nextUrl.pathname)
-  if (request.headers.get("next-action")) {
-    headers.set('content-type', 'text/x-component')
-  }
 
   if (request.method === "POST" || base.pathname.includes("/api/")) {
     if (request.headers.get("sec-fetch-site") !== "same-origin") 
-      return NextResponse.json({msg: "Forbiden"}, {status: 403, headers})
-    return NextResponse.next({headers})
+      return NextResponse.json({msg: "Forbiden"}, {status: 403})
+    return NextResponse.next()
   }
 
   const session = await getServerSession(authConfig)
@@ -25,23 +20,21 @@ export async function middleware(request) {
 
   if (!session) {
     if (["/dashboard", "/notes", "/account", "/auth/verify", "/auth/resend-code"].find(l => base.pathname.includes(l))) {
-      return NextResponse.redirect(`${base.origin}/auth/login`, {headers})
+      return NextResponse.redirect(`${base.origin}/auth/login`)
     }
-    return NextResponse.next({headers})
+    return NextResponse.next()
   }
 
   if (!user?.verified) {
     if (["/auth/verify", "/auth/resend-code"].includes(base.pathname)) {
-      return NextResponse.next({headers})
+      return NextResponse.next()
     }
-    return NextResponse.redirect(`${base.origin}/auth/verify`, {headers})
+    return NextResponse.redirect(`${base.origin}/auth/verify`)
   }
   
   if (base.pathname.includes("/auth/")) {
-    return NextResponse.redirect(`${base.origin}/dashboard`, {headers})
+    return NextResponse.redirect(`${base.origin}/dashboard`)
   }
-
-  return NextResponse.next({headers})
 }
 
 export const config = {

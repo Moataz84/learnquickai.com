@@ -91,6 +91,7 @@ export async function generateDocumentData(promptId, filePath, pId) {
 
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
+      truncation: "auto",
       input: [
         {
           role: "user",
