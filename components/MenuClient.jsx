@@ -13,6 +13,7 @@ const setCookie = (name, value, days) => {
 
 export default function MenuClient({ isLightMode, user }) {
   const [lightMode, setLightMode] = useState(isLightMode)
+
   const togglelightMode = () => {
     setLightMode((prev) => {
       const newlightMode = !prev
@@ -23,23 +24,31 @@ export default function MenuClient({ isLightMode, user }) {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300 sticky top-0">
-      {/* Left: Logo */}
-      <Logo isLightMode={lightMode} />
+    <header className="z-50 flex items-center justify-between px-4 sm:px-6 py-3 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300 sticky top-0">
+      {/* Left: Logo (hide text on mobile) */}
+      <div className="flex items-center w-auto">
+        <div className="block sm:hidden">
+          <Logo isLightMode={lightMode} minimal />
+        </div>
+        <div className="hidden sm:block">
+          <Logo isLightMode={lightMode} />
+        </div>
+      </div>
 
-      {/* Middle: Navigation Links */}
-      <nav className="flex items-center gap-4 ml-auto">
+      {/* Navigation Links */}
+      <nav className="flex items-center gap-3">
         {/* Dark Mode Toggle */}
         <Button
           onClick={togglelightMode}
-          className="p-0 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 outline-none cursor-pointer"
+          className="p-0 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 outline-none cursor-pointer hidden min-[355px]:block"
         >
           {!lightMode ? <FaSun size={14} /> : <FaMoon size={14} />}
         </Button>
 
+        {/* Suggestions Link - hidden on small screens */}
         <Link
           href="/suggestions"
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition"
+          className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition"
         >
           Suggestions
         </Link>
