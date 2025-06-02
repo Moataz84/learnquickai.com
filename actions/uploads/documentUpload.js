@@ -94,7 +94,7 @@ export async function generateDocumentData(promptId, filePath, pId) {
 
     const outputDir = join(process.cwd(), "temp", pId)
     mkdirSync(outputDir)
-    execSync(`pdftoppm -png -r 150 "${pdfPath}" "${outputDir}/${pId}-page"`)
+    execSync(`pdftoppm -png -r 150 "${pdfFile}" "${outputDir}/${pId}-page"`)
 
     const images = readdirSync(outputDir)
     .filter(file => file.endsWith(".png"))
