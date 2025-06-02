@@ -98,7 +98,7 @@ export async function generateDocumentData(promptId, filePath, pId) {
 
     const images = readdirSync(outputDir)
     .filter(file => file.endsWith(".png"))
-    .map(file => path.join(outputDir, file))
+    .map(file => join(outputDir, file))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     const text = await ocrImages(images)
 
