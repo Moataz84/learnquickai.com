@@ -7,7 +7,7 @@ const nextConfig = {
       bodySizeLimit: "5mb",
     }
   },
-  serverExternalPackages: ["fluent-ffmpeg", "ffmpeg-static", "ffprobe-static"]
+  serverExternalPackages: ["fluent-ffmpeg", "ffmpeg-static", "ffprobe-static", "pdf-parse", "tesseract.js"]
 };
 
 export default nextConfig;
