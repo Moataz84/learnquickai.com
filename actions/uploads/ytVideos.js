@@ -10,7 +10,7 @@ import { v4 } from "uuid"
 import Prompts from "@/utils/Models/Prompts"
 import { generateData, generateTranscriptAndData } from "@/actions/uploads/generateData"
 import { URL } from "url"
-import { exec } from "child_process"
+import { execSync } from "child_process"
 import { readdirSync, readFileSync, unlinkSync } from "fs"
 
 const proxies = [
@@ -86,22 +86,13 @@ export async function checkYTVideo(url) {
   }
 }
 ///////////////////////////////
-function execPromise(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) reject(error)
-      else if (stderr) reject(stderr)
-      else resolve(stdout)
-    })
-  })
-}
 
 async function getCaptions(url) {
   const videoId = randomBytes(8).toString("hex")
   const outputTemplate = join(process.cwd(), "temp", `${videoId}.%(ext)s`)
   for (const proxy of proxies) {
     try {
-      await execPromise(
+      execSync(
         `yt-dlp --proxy "${proxy}" --write-auto-subs --sub-lang "en" -o "${outputTemplate}" --skip-download ${url}`
       )
       const dir = join(process.cwd(), "temp")
@@ -136,7 +127,7 @@ async function downloadVideo(url) {
   const outputTemplate = join(process.cwd(), "temp", `${videoId}.%(ext)s`)
   for (const proxy of proxies) {
     try {
-      await execPromise(
+      await execSync(
         `yt-dlp --proxy "${proxy}" -f worstaudio -o "${outputTemplate}" --extract-audio --audio-format mp3 ${url}`
       )
       return {videoId, videoPath: join(process.cwd(), "temp", `${videoId}.mp3`)}
