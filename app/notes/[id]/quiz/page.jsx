@@ -8,6 +8,7 @@ import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
 import { Button } from "@/components/ui/button"
 import shuffle from "@/actions/shuffle"
+import { useRouter } from "next/navigation"
 
 function shuffleQuestions(questions) {
   return shuffle(questions).map(q => ({ ...q, options: shuffle(q.options) }))
@@ -21,6 +22,7 @@ export default function QuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const correctSound = useRef(null)
   const incorrectSound = useRef(null)
@@ -46,6 +48,9 @@ export default function QuizPage() {
     setIsLoading(true)
     try {
       const generatedQuiz = await generateQuestions(prompt.promptId)
+      if (!generatedQuiz.length) {
+        router.push("/pricing")
+      }
       setQuestions(generatedQuiz)
       setQuizData(generatedQuiz)
       setCurrentQuestionIndex(0)

@@ -1,8 +1,12 @@
+import getUsage from "@/actions/getUsage"
 import { authConfig } from "@/utils/auth"
 import Messages from "@/utils/Models/Messages"
 import Prompts from "@/utils/Models/Prompts"
+import Usages from "@/utils/Models/Usages"
+import Users from "@/utils/Models/Users"
 import { getServerSession } from "next-auth"
 import OpenAI from "openai"
+import { encoding_for_model } from "tiktoken"
 
 export const dynamic = "force-dynamic"
 
@@ -18,6 +22,11 @@ export async function GET(req) {
 
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
+  const user = await Users.findOne({_id: userId})
+  const { cost } = await getUsage(userId)
+  if ((!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
+    return new Response(null, { status: 204 })
+  }
 
   await new Messages({
     promptId,
@@ -46,6 +55,7 @@ export async function GET(req) {
         )
 
         for await (const chunk of completion) {
+          console.log(chunk)
           const content = chunk.choices[0]?.delta?.content
 
           if (content) {
@@ -66,6 +76,11 @@ export async function GET(req) {
               content: assistantContent.replaceAll("\\", "\\\\"),
             }).save()
 
+            const enc = encoding_for_model("gpt-4o-mini-2024-07-18")
+            const promptText = `Answer this question ${message}. Reference this summary when relevant ${summary}.`
+            const promptTokenCount = enc.encode(promptText).length
+            const completionTokenCount = enc.encode(assistantContent).length
+            new Usages({userId, dateTime: Date.now().toString(), seconds: 0, promptId, cost: (completionTokenCount * 6.0e-7) + (promptTokenCount * 1.5e-7), type: "message"}).save()
             break
           }
         }

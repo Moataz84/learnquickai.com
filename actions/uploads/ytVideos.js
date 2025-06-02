@@ -68,7 +68,7 @@ export async function checkYTVideo(url) {
     if (!duration) return {msg: "This video is unavailable"}
     const length = iso8601DurationToSeconds(duration)
     const totalTime = length + usage
-    if ((!user.active && totalTime > 3600) || cost >= 3.5) {
+    if ((!user.active && totalTime > 3600) || (!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
       return {msg: "exceeded"}
     }
     if (length > (3600 * 10)) {

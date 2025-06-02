@@ -7,6 +7,7 @@ import { deleteFlashcard, generateQuestions } from "@/actions/prompts/generateQu
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
 import shuffle from "@/actions/shuffle"
+import { useRouter } from "next/navigation"
 
 export default function FlashcardPage() {
   const hasMounted = useRef(false)
@@ -24,6 +25,7 @@ export default function FlashcardPage() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isNavigating, setIsNavigating] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (!hasMounted.current) {
@@ -71,6 +73,9 @@ export default function FlashcardPage() {
     setIsLoading(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
+      if (!generated.length) {
+        router.push("/pricing")
+      }
       const formatted = generated.map((q) => ({
         question: q.question,
         answer: q.options.find((a) => a.id === q.answer).text,
@@ -90,6 +95,9 @@ export default function FlashcardPage() {
     setIsLoading(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
+      if (!generated.length) {
+        router.push("/pricing")
+      }
       const formatted = generated.map((q) => ({
         question: q.question,
         answer: q.options.find((a) => a.id === q.answer).text,

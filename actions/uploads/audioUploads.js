@@ -60,7 +60,7 @@ export async function checkVideo(fileId) {
   const duration = await getVideoDuration(videoPath)
   const totalTime = usage + duration
   const user = await Users.findOne({_id: id})
-  if ((!user.active && totalTime > 3600) || cost >= 3.5) {
+  if ((!user.active && totalTime > 3600) || (!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
     unlinkSync(videoPath)
     return {msg: "exceeded"}
   }

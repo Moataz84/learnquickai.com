@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import MathRender from "@/components/MathRender"
 import { usePrompt } from "@/contexts/PromptContext"
 import getMessages from "@/actions/prompts/getMessages"
+import { useRouter } from "next/navigation"
 
 const ChatMessages = React.memo(({ messages }) => {
   return messages.length !== 0 ? (
@@ -30,6 +31,7 @@ const ChatMessages = React.memo(({ messages }) => {
 })
 
 export default function ChatSidebar({ userMessages }) {
+  const router = useRouter()
   const { prompt } = usePrompt()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState("")
@@ -76,9 +78,9 @@ export default function ChatSidebar({ userMessages }) {
     }
 
     source.onerror = (err) => {
-      console.error("Stream error:", err)
       setLoading(false)
       source.close()
+      router.push("/pricing")
     }
   }, [input, loading, prompt.promptId])
 

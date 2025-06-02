@@ -7,6 +7,8 @@ import { getServerSession } from "next-auth"
 import { zodTextFormat } from "openai/helpers/zod"
 import OpenAI from "openai"
 import { z } from "zod"
+import getUsage from "@/actions/getUsage"
+import Users from "@/utils/Models/Users"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API
@@ -26,6 +28,11 @@ const questionsSchema = z.object({
 export async function generateQuestions(promptId) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
+  const user = await Users.findOne({_id: userId})
+  const { cost } = await getUsage(userId)
+  if ((!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
+    return []
+  }
   const prompt = await getPrompt(promptId)
   const message = `You are an expert tutor generating multiple-choice quiz questions from an educational video **summary**.
 
@@ -91,7 +98,7 @@ ${prompt.summary}`
 
   await Promise.all([
     Questions.insertMany(questions),
-    Usages.findOneAndUpdate({promptId}, {$inc: {cost: ((response.usage.input_tokens * 6.0e-7) + (response.usage.output_tokens * 1.5e-7))}})
+    new Usages({userId, dateTime: Date.now().toString(), seconds: 0, promptId, cost: (response.usage.output_tokens * 6.0e-7) + (response.usage.input_tokens * 1.5e-7), type: "questions"}).save()
   ])
   return questions
 }
