@@ -103,7 +103,7 @@ export async function generateDocumentData(promptId, filePath, pId) {
     const text = await ocrImages(images)
 
     generateData(promptId, text)
-    rmdirSync(outputDir)
+    rmdirSync(outputDir, {recursive: true})
     unlinkSync(pdfFile)
   } catch (e) {
     console.log(e)
