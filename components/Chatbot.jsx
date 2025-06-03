@@ -75,6 +75,18 @@ export default function ChatSidebar({ userMessages }) {
         return
       }
 
+      if (event.data === "[FREE_OVERUSE]") {
+        setLoading(false)
+        source.close()
+        return router.push("/pricing")
+      }
+
+      if (event.data === "[PAID_OVERUSE]") {
+        setLoading(false)
+        source.close()
+        return router.push("/rate-limit")
+      }
+
       setMessages((prev) => {
         const last = prev[prev.length - 1]
         if (last.role === "assistant") {
@@ -87,10 +99,9 @@ export default function ChatSidebar({ userMessages }) {
 
     source.onerror = (err) => {
       setLoading(false)
-      source.close()
-      router.push("/pricing")
     }
   }, [input, loading, prompt.promptId])
+
 
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: 'nearest', inline: 'start' })

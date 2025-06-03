@@ -23,9 +23,30 @@ export async function GET(req) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
   const user = await Users.findOne({_id: userId})
-  const { cost } = await getUsage(userId)
-  if ((!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
-    return new Response(null, { status: 204 })
+  const { cost, messages } = await getUsage(userId)
+  
+  if (cost >= 3.5) {
+    return new Response("data: [PAID_OVERUSE]\n\n", {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive"
+      },
+    })
+  }
+
+  if (!user.active) {
+    if (messages + 1 > 5 || cost > 0.15) {
+      return new Response("data: [FREE_OVERUSE]\n\n", {
+        status: 200,
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive"
+        },
+      })
+    }
   }
 
   await new Messages({
