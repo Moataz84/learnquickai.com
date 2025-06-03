@@ -57,7 +57,7 @@ function getVideoIdFromUrl(url) {
 export async function checkYTVideo(url) {
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
-  const { seconds: usage, cost } = await getUsage(id)
+  const { seconds: usage, cost, videoAndAudio } = await getUsage(id)
   const user = await Users.findOne({_id: id})
 
   try {
@@ -68,9 +68,17 @@ export async function checkYTVideo(url) {
     if (!duration) return {msg: "This video is unavailable"}
     const length = iso8601DurationToSeconds(duration)
     const totalTime = length + usage
-    if ((!user.active && totalTime > 3600) || (!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
-      return {msg: "exceeded"}
+
+    if (cost >= 3.5) {
+      return {msg: "rate-limit"}
     }
+
+    if (!user.active) {
+      if (totalTime > 3600 || videoAndAudio + 1 > 2 || cost > 0.15) {
+        return {msg: "exceeded"}
+      }
+    }
+
     if (length > (3600 * 10)) {
       return {msg: "limit"}
     }
@@ -127,7 +135,7 @@ async function downloadVideo(url) {
   const outputTemplate = join(process.cwd(), "temp", `${videoId}.%(ext)s`)
   for (const proxy of proxies) {
     try {
-      await execSync(
+      execSync(
         `yt-dlp --proxy "${proxy}" -f worstaudio -o "${outputTemplate}" --extract-audio --audio-format mp3 ${url}`
       )
       return {videoId, videoPath: join(process.cwd(), "temp", `${videoId}.mp3`)}

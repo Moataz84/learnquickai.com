@@ -36,15 +36,12 @@ export default function WaitingRoom({ socket, show, gameId }) {
     })
     socket?.on("time", t => setTime(t))
     socket?.on("score", (scores) => {
-    setLiveLeaderboard(scores)
-  })
+      setLiveLeaderboard(scores)
+    })
   }, [socket])
 
-  const playAgain = () =>
-    (window.location.href = `/notes/${prompt.promptId}/gamify`)
-
-  const exitGame = () =>
-    (window.location.href = `/notes/${prompt.promptId}`)
+  const playAgain = () => (window.location.href = `/notes/${prompt.promptId}/gamify`)
+  const exitGame = () => (window.location.href = `/notes/${prompt.promptId}`)
 
   const copyJoinLink = () => {
     const joinUrl = `${window.location.href}/play-game?gameId=${gameId}`
@@ -57,16 +54,13 @@ export default function WaitingRoom({ socket, show, gameId }) {
   if (!show) return null
 
   return (
-    <div className="space-y-4 mx-auto w-2xl">
-      {/* Game Code + Exit Button (inline) */}
-      <div className="flex items-center justify-between font-mono select-text gap-10">
+    <div className="space-y-4 max-w-4xl w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between font-mono select-text gap-4 sm:gap-10">
         <div className="flex flex-col items-start gap-2">
           <span>Game Code: <b>{gameId}</b></span>
           <button
             onClick={copyJoinLink}
-            className={`text-sm rounded transition cursor-pointer p-2 ${
-              copied ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'
-            } text-white`}
+            className={`text-sm rounded transition cursor-pointer p-2 ${copied ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
           >
             {copied ? '✅ Copied!' : '📋 Copy Join Link'}
           </button>
@@ -79,8 +73,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
         </button>
       </div>
 
-      {/* Player Count & Time */}
-      <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-gray-500 mt-4 gap-2">
         <p className="font-medium text-blue-600">
           🧑‍🤝‍🧑 Players: <span className="font-semibold">{players}</span>
         </p>
@@ -97,15 +90,39 @@ export default function WaitingRoom({ socket, show, gameId }) {
         </div>
       )}
 
-      {/* Live Leaderboard */}
       {gameStarted && (
         <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">🏆 Live Leaderboard</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700 text-left">
-            {liveLeaderboard
-              .sort((a, b) => b.score - a.score)
-              .map((player, index) => (
-                <li key={index} className="py-1 flex justify-between items-center">
+            {liveLeaderboard.sort((a, b) => b.score - a.score).map((player, index) => (
+              <li key={index} className="py-1 flex justify-between items-center">
+                <span className="font-medium text-gray-700 dark:text-gray-200">
+                  #{index + 1} {player.name}
+                </span>
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {player.score} pts
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {gameStarted && (
+        <KahootGame gameId={gameId} socket={socket} show={show} interval={interval} />
+      )}
+
+      {gameEnded && (
+        <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 mt-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 max-w-md w-full text-center space-y-6">
+            <div className="flex flex-col items-center space-y-2">
+              <FaTrophy size={48} className="text-yellow-500" />
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Game Over! 🏁</h1>
+              <p className="text-gray-500 dark:text-gray-400">Here are the final scores:</p>
+            </div>
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700 text-left">
+              {leaderBoard.sort((a, b) => b.score - a.score).map((player, index) => (
+                <li key={index} className="py-2 flex justify-between items-center">
                   <span className="font-medium text-gray-700 dark:text-gray-200">
                     #{index + 1} {player.name}
                   </span>
@@ -113,43 +130,8 @@ export default function WaitingRoom({ socket, show, gameId }) {
                     {player.score} pts
                   </span>
                 </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Active Game Component */}
-      {gameStarted && (
-        <KahootGame gameId={gameId} socket={socket} show={show} interval={interval} />
-      )}
-
-      {/* Final Leaderboard */}
-      {gameEnded && (
-        <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 mt-5">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-md w-full text-center space-y-6">
-            <div className="flex flex-col items-center space-y-2">
-              <FaTrophy size={48} className="text-yellow-500" />
-              <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                Game Over! 🏁
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400">Here are the final scores:</p>
-            </div>
-
-            <ul className="divide-y divide-gray-200 dark:divide-gray-700 text-left">
-              {leaderBoard
-                .sort((a, b) => b.score - a.score)
-                .map((player, index) => (
-                  <li key={index} className="py-2 flex justify-between items-center">
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      #{index + 1} {player.name}
-                    </span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400">
-                      {player.score} pts
-                    </span>
-                  </li>
               ))}
             </ul>
-
             <button
               onClick={playAgain}
               className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition cursor-pointer"

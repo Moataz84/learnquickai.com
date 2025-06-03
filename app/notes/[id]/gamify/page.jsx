@@ -8,12 +8,14 @@ import { usePrompt } from "@/contexts/PromptContext"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { generateQuestions } from "@/actions/prompts/generateQuestions"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 export default function GamePage() {
   const { prompt } = usePrompt()
   const { questions, setQuestions } = useQuestions()
   const session = useSession()
   const socketRef = useRef(null)
+  const router = useRouter()
 
   const [waiting, setWaiting] = useState(false)
   const [gameId, setGameId] = useState("")
@@ -53,6 +55,8 @@ export default function GamePage() {
     setIsGenerating(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
+      if (generated[0] === "exceeded") return router.push("/pricing")
+      if (generated[0] === "rate-limit") return router.push("/rate-limit")
       setQuestions(prev => {
         const combined = [...prev, ...generated].slice(0, 30)
         if (combined.length >= 30) setHideGenerate(true)
@@ -66,8 +70,11 @@ export default function GamePage() {
   }
 
   return (
-    <div className="flex flex-col items-start space-y-6 p-12 w-full max-w-3xl mx-auto">
+    <div className="flex flex-col items-start space-y-6 pt-28 md:pt-12 px-5 md:px-12 pb-12 w-full max-w-3xl">
       {/* Generate Questions */}
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        Multiplayer Game
+      </h1>
       {!hideGenerate && (
         <div className="flex flex-col gap-2">
           <Button

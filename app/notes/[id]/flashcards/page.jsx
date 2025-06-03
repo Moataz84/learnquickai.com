@@ -73,9 +73,8 @@ export default function FlashcardPage() {
     setIsLoading(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
-      if (!generated.length) {
-        router.push("/pricing")
-      }
+      if (generated[0] === "exceeded") return router.push("/pricing")
+      if (generated[0] === "rate-limit") return router.push("/rate-limit")
       const formatted = generated.map((q) => ({
         question: q.question,
         answer: q.options.find((a) => a.id === q.answer).text,
@@ -95,9 +94,8 @@ export default function FlashcardPage() {
     setIsLoading(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
-      if (!generated.length) {
-        router.push("/pricing")
-      }
+      if (generated[0] === "exceeded") return router.push("/pricing")
+      if (generated[0] === "rate-limit") return router.push("/rate-limit")
       const formatted = generated.map((q) => ({
         question: q.question,
         answer: q.options.find((a) => a.id === q.answer).text,
@@ -122,7 +120,7 @@ export default function FlashcardPage() {
   }
 
   return (
-    <div className="min-h-screen p-6 sm:p-10 md:p-14 dark:bg-gray-900 w-full">
+    <div className="min-h-screen pt-26 px-10 md:pt-14 md:px-14 pb-10 dark:bg-gray-900 w-full">
       <h1 className="text-4xl font-bold mb-10 text-gray-900 dark:text-white">
         Flashcards
       </h1>

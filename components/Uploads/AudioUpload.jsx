@@ -84,6 +84,7 @@ export default function AudioUpload({ setModalError, loading, setLoading }) {
         const result = await checkVideo(fileId)
         setLoading(false)
         if (result.msg === "exceeded") return router.push("/pricing")
+        if (result.msg === "rate-limit") return router.push("/rate-limit")
         if (result.msg === "success") {
           generateTranscriptAndData(result.promptId, result.videoPath, result.videoId)
           return router.push(`/notes/${result.promptId}`)

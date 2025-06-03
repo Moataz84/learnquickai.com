@@ -84,9 +84,9 @@ export default function KahootGame({ gameId, socket, interval }) {
   }, [currentQuestion])
 
   return (
-    <div className="w-2xl p-8 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 animate-fade-in">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 rounded-xl shadow-md bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 animate-fade-in">
       {/* Question */}
-      <h2 className="text-2xl font-bold min-h-[56px] animate-fade-in duration-500">
+      <h2 className="text-2xl sm:text-3xl font-bold min-h-[56px] animate-fade-in duration-500">
         <MathRender>{currentQuestion?.question}</MathRender>
       </h2>
 
@@ -125,5 +125,5 @@ export default function KahootGame({ gameId, socket, interval }) {
         Auto-advances every {interval} seconds
       </div>
     </div>
-    )
+  )
 }

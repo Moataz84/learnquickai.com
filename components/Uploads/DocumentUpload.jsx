@@ -96,6 +96,7 @@ export default function DocumentUpload({ setModalError, loading, setLoading }) {
         const result = await checkDocument(fileId, fileExtension)
         setLoading(false)
         if (result.msg === "exceeded") return router.push("/pricing")
+        if (result.msg === "rate-limit") return router.push("/rate-limit")
         if (result.msg === "success") {
           if (file.fileExtension === "txt") {
             generateTXTData(result.promptId, result.documentPath)

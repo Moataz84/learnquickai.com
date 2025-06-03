@@ -34,8 +34,8 @@ export default function AddEmail() {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center">
-      <div className="w-sm mx-auto p-6 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-600 dark:text-gray-300 mb-10 relative overflow-hidden">
+    <div className="flex flex-col w-full min-h-screen items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm mx-auto p-6 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-600 dark:text-gray-300 mb-10 relative overflow-hidden">
         {loading && <div className="loading"></div>}
 
         <h2 className="text-2xl font-bold text-center text-black dark:text-white pt-2">

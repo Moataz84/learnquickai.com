@@ -77,7 +77,7 @@ export default function LandingPage() {
 
   return (
     <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
-      <section className="flex flex-col-reverse lg:flex-row justify-center items-center gap-12 py-20 px-6 sm:px-10 md:px-16">
+      <section className="w-full max-w-screen-xl mx-auto flex flex-col-reverse lg:flex-row justify-between items-start gap-12 py-20 px-6 sm:px-10 md:px-16">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ export default function LandingPage() {
           viewport={{ once: false }}
           className="w-full lg:w-1/2 flex justify-center"
         >
-          <div className="w-full max-w-md rounded-xl overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-blue-400">
+          <div className="w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-blue-400">
             <video
               src="/demo.mp4"
               autoPlay

@@ -115,7 +115,7 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full p-12 bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 items-center">
+    <div className="flex flex-col min-h-screen w-full pt-26 md:pt-10 px-10 pb-10 bg-white dark:bg-gray-900 text-black dark:text-white space-y-6 items-center">
       {!isQuizStarted ? (
         <>
           <h2 className="text-3xl font-bold text-center mt-8">

@@ -14,7 +14,7 @@ export default async function AccountPage() {
   return (
     <div className="flex">
       <SideMenu />
-      <div className="p-10 flex flex-col items-start w-full">
+      <div className="pt-26 md:pt-10 px-10 pb-10 flex flex-col items-start w-full">
         <div className="w-full max-w-2xl text-left">
           <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
           <p className="text-muted-foreground mb-6">

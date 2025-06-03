@@ -18,7 +18,7 @@ export default async function Dashboard() {
   return (
     <div className="flex">
       <SideMenu />
-      <div className="min-h-screen p-10 flex-1 max-w-[80rem] mx-0">
+      <div className="min-h-screen pt-26 md:pt-10 px-10 pb-10 flex-1 max-w-[80rem] mx-0">
         <UploadSection />
         {prompts.length === 0 ? (
           <p className="text-xl font-bold text-center text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">

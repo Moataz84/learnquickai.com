@@ -30,7 +30,7 @@ export default function PromptSettingsPage() {
 
   return (
     <div className="min-h-screen text-base relative w-[70%] max-w-[750px]">
-      <div className="max-w-4xl w-full p-14">
+      <div className="max-w-4xl w-full pt-26 md:pt-10 px-10 pb-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Note Settings
         </h1>

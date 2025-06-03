@@ -2,26 +2,34 @@
 import { signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { MdDashboard, MdEditNote } from "react-icons/md"
-import { FaMoon, FaSun, FaBars, FaUser, FaSignOutAlt, FaClone, FaCog, FaGamepad } from "react-icons/fa"
+import { FaMoon, FaSun, FaBars, FaUser, FaSignOutAlt, FaClone, FaCog, FaGamepad, FaRobot } from "react-icons/fa"
 import { FaNoteSticky } from "react-icons/fa6"
 import Logo from "@/components/Logo"
 
 export default function SideMenuClient({ isLightMode, promptId }) {
+  const [collapsed, setCollapsed] = useState(false)
+  const [lightMode, setLightMode] = useState(isLightMode)
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
   const setCookie = (name, value, days) => {
     const date = new Date()
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
     document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`
   }
-  
-  const [collapsed, setCollapsed] = useState(false)
-  const [lightMode, setlightMode] = useState(isLightMode)
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", !lightMode)
     setCookie("lightMode", lightMode.toString(), 365)
   }, [lightMode])
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsOpen(false)
+    }
+  }, [pathname])
 
   const CollapseIcon = () => (
     <svg
@@ -47,178 +55,102 @@ export default function SideMenuClient({ isLightMode, promptId }) {
   )
 
   return (
-    <div
-      className={`sticky top-0 left-0 h-screen flex-shrink-0 z-50 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-69"} ${lightMode ? "border-gray-300" : "border-gray-700"}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-center mb-6">
+    <>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 p-4 shadow flex items-center justify-between">
+        <button onClick={() => setIsOpen(true)} aria-label="Open Menu" className="cursor-pointer">
+          <FaBars size={22} />
+        </button>
+        <Logo isLightMode={lightMode} />
+      </div>
+
+      {/* Backdrop */}
+      {isOpen && (
         <div
-          className={`overflow-hidden transition-all duration-500 ${collapsed ? "w-0" : "w-full"}`}
-        >
-          <Logo isLightMode={lightMode} />
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed md:sticky top-0 left-0 h-dvh z-50 flex-shrink-0 transition-all duration-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 flex flex-col border-r ${collapsed ? "w-20" : "w-69"} ${lightMode ? "border-gray-300" : "border-gray-700"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+      >
+        {/* Header */}
+        <div className="items-center justify-center mb-6 hidden md:flex">
+          <div className={`overflow-hidden transition-all duration-500 ${collapsed ? "w-0" : "w-full"}`}>
+            <Logo isLightMode={lightMode} />
+          </div>
+          <button onClick={() => setCollapsed(!collapsed)} aria-label="Toggle Sidebar" className="cursor-pointer px-2">
+            {collapsed ? <FaBars size={24} /> : <CollapseIcon />}
+          </button>
         </div>
-        <button onClick={() => setCollapsed(!collapsed)} aria-label="Toggle Sidebar" className="cursor-pointer px-2">
-          {collapsed ? <FaBars size={24} /> : <CollapseIcon flipped />}
-        </button>
-      </div>
-
-      <nav className="flex flex-col gap-2">
-        <Link
-          href="/dashboard"
-          className={`flex items-center gap-4 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400">
-            <MdDashboard size={22} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Dashboard
-          </span>
-        </Link>
-        
-        { promptId && (<>
-        <Link
-          href={`/notes/${promptId}`}
-          className={`flex items-center gap-5 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400 pl-[3px]">
-            <FaNoteSticky size={20} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Note
-          </span>
-        </Link>
-          <Link
-          href={`/notes/${promptId}/quiz`}
-          className={`flex items-center gap-2 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400">
-            <MdEditNote size={30} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Quizzes
-          </span>
-        </Link>
-        <Link
-          href={`/notes/${promptId}/flashcards`}
-          className={`flex items-center gap-5 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400 pl-[3px]">
-            <FaClone size={18} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Flashcards
-          </span>
-        </Link>
-        <Link
-          href={`/notes/${promptId}/gamify`}
-          className={`flex items-center gap-5 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400 pl-[3px]">
-            <FaGamepad size={20} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Gamify
-          </span>
-        </Link>
-        <Link
-          href={`/notes/${promptId}/settings`}
-          className={`flex items-center gap-5 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400 pl-[3px]">
-            <FaCog size={20} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Settings
-          </span>
-        </Link>
-        </>)}
-        <Link
-          href="/account"
-          className={`flex items-center gap-5 px-3 py-3 rounded-lg text-lg 
-          transition-[opacity,transform,width] duration-300 
-          hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
-        >
-          <span className="text-gray-600 dark:text-gray-400 pl-[3px]">
-            <FaUser size={18} />
-          </span>
-          <span
-            className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
-          >
-            Profile
-          </span>
-        </Link>
-      </nav>
-
-      {/* Dark Mode Toggle */}
-      <div className="mt-auto pt-4 border-t border-gray-300 dark:border-gray-700">
-        <button
-          onClick={() => setlightMode(!lightMode)}
-          className="flex items-center gap-4 px-3 py-3 rounded-lg text-lg transition-all duration-300 
-          hover:bg-yellow-100 dark:hover:bg-yellow-900 group w-full cursor-pointer"
-        >
-          <span>
-            {!lightMode ? (
-              <FaSun
-                size={22}
-                className="text-yellow-600 group-hover:text-yellow-500 transition-colors duration-300"
-              />
-            ) : (
-              <FaMoon
-                size={22}
-                className="text-gray-600 dark:text-gray-400 group-hover:text-yellow-500 transition-colors duration-300"
-              />
+    
+        {/* Scrollable Content */}
+        <div className="flex-1 min-h-0 overflow-y-auto w-full overflow-x-hidden">
+          <nav className="flex flex-col gap-2">
+            <MenuItem href="/dashboard" icon={<MdDashboard size={22} />} label="Dashboard" collapsed={collapsed} />
+            {promptId && (
+              <>
+                <MenuItem href={`/notes/${promptId}`} icon={<FaNoteSticky size={20} />} label="Note" collapsed={collapsed} />
+                <MenuItem href={`/notes/${promptId}/quiz`} icon={<MdEditNote size={30} />} label="Quizzes" collapsed={collapsed} />
+                <MenuItem href={`/notes/${promptId}/flashcards`} icon={<FaClone size={18} />} label="Flashcards" collapsed={collapsed} />
+                <MenuItem href="?chat" icon={<FaRobot size={20} />} label="Chatbot" collapsed={collapsed} />
+                <MenuItem href={`/notes/${promptId}/gamify`} icon={<FaGamepad size={20} />} label="Gamify" collapsed={collapsed} />
+                <MenuItem href={`/notes/${promptId}/settings`} icon={<FaCog size={20} />} label="Settings" collapsed={collapsed} />
+              </>
             )}
-          </span>
-          <span
-            className={`whitespace-nowrap transition-all duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
+            <MenuItem href="/account" icon={<FaUser size={18} />} label="Profile" collapsed={collapsed} />
+          </nav>
+        </div>
+          
+        {/* Footer */}
+        <div className="pt-4 border-t border-gray-300 dark:border-gray-700">
+          <button
+            onClick={() => setLightMode(!lightMode)}
+            className="flex items-center gap-4 px-3 py-3 rounded-lg text-lg transition-all duration-300 hover:bg-yellow-100 dark:hover:bg-yellow-900 group w-full cursor-pointer"
           >
-            {!lightMode ? "Light Mode" : "Dark Mode"}
-          </span>
-        </button>
-
-        {/* Logout */}
-        <button
-          onClick={() => signOut({callbackUrl: "/"})}
-          className="flex items-center gap-4 px-3 py-3 rounded-lg text-lg transition-all duration-300 
-          hover:bg-red-100 dark:hover:bg-red-900 group w-full mt-2 cursor-pointer"
-        >
-          <span>
-            <FaSignOutAlt
-              size={22}
-              className="text-red-600 group-hover:text-red-500 transition-colors duration-300"
-            />
-          </span>
-          <span
-            className={`transition-all duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}
+            <span>
+              {!lightMode ? (
+                <FaSun size={22} className="text-yellow-600 group-hover:text-yellow-500 transition-colors duration-300" />
+              ) : (
+                <FaMoon size={22} className="text-gray-600 dark:text-gray-400 group-hover:text-yellow-500 transition-colors duration-300" />
+              )}
+            </span>
+            <span className={`whitespace-nowrap transition-all duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+              {!lightMode ? "Light Mode" : "Dark Mode"}
+            </span>
+          </button>
+            
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="flex items-center gap-4 px-3 py-3 rounded-lg text-lg transition-all duration-300 hover:bg-red-100 dark:hover:bg-red-900 group w-full mt-2 cursor-pointer"
           >
-            Logout
-          </span>
-        </button>
+            <span>
+              <FaSignOutAlt size={22} className="text-red-600 group-hover:text-red-500 transition-colors duration-300" />
+            </span>
+            <span className={`transition-all duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+              Logout
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
+    </>
+  )
+}
+
+function MenuItem({ href, icon, label, collapsed }) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-4 px-3 py-3 rounded-lg text-lg 
+      transition-[opacity,transform,width] duration-300 
+      hover:bg-gray-100 dark:hover:bg-gray-900 group cursor-pointer whitespace-nowrap`}
+    >
+      <span className="text-gray-600 dark:text-gray-400">{icon}</span>
+      <span className={`transition-[opacity,width] duration-500 ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto"}`}>
+        {label}
+      </span>
+    </Link>
   )
 }

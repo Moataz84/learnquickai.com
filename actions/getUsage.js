@@ -13,7 +13,11 @@ export default async function getUsage(userId) {
     }
   })
 
-  return {
+ return {
+    videoAndAudio: results.filter(u => u.type === "video" || u.type === "audio").length,
+    documents: results.filter(u => u.type === "document").length,
+    questions: results.filter(u => u.type === "questions").length,
+    messages: results.filter(u => u.type === "message").length,
     seconds: results.reduce((sum, entry) => sum + parseFloat(entry.seconds), 0), 
     cost: results.reduce((sum, entry) => {
       if (entry.cost !== undefined) return sum + parseFloat(entry.cost)     

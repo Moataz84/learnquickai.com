@@ -33,8 +33,8 @@ export default function VerifyCode() {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center">
-      <div className="w-sm mx-auto p-6 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-600 dark:text-gray-300 mb-10 relative overflow-hidden">
+    <div className="flex flex-col w-full min-h-screen items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm mx-auto p-6 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-600 dark:text-gray-300 mb-10 relative overflow-hidden">
         {loading && <div className="loading"></div>}
 
         <h2 className="text-2xl font-bold text-center text-black dark:text-white pt-2">
@@ -71,8 +71,8 @@ export default function VerifyCode() {
         <p className="text-sm text-red-700 mt-3 h-5">{error || ""}</p>
       </div>
 
-      <span className="text-sm text-gray-600 dark:text-gray-400">
-        Didn&apos;t get the code?{" "}
+      <span className="text-sm text-gray-600 dark:text-gray-400 max-w-sm text-center px-4">
+        Didn't get the code?{" "}
         <Link className="underline" href="/auth/resend-code">
           Resend
         </Link>

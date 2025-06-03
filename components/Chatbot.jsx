@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import MathRender from "@/components/MathRender"
 import { usePrompt } from "@/contexts/PromptContext"
 import getMessages from "@/actions/prompts/getMessages"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const ChatMessages = React.memo(({ messages }) => {
   return messages.length !== 0 ? (
@@ -42,8 +42,16 @@ export default function ChatSidebar({ userMessages }) {
 
   const messagesContainerRef = useRef(null)
   const bottomRef = useRef(null)
+  const searchParams = useSearchParams()
 
   const [messages, setMessages] = useState(userMessages)
+
+  useEffect(() => {
+    const param = searchParams.get("chat")
+    if (param !== null) {
+      setOpen(true)
+    }
+  }, [searchParams])
 
   const handleSend = useCallback(() => {
     if (!input.trim() || loading || input.length > CHARACTER_LIMIT) return
@@ -105,88 +113,87 @@ export default function ChatSidebar({ userMessages }) {
   const memoMessages = useMemo(() => messages, [messages])
 
   return (
-    <div className="sticky top-0 right-0 h-screen z-50 transition-all duration-300 ">
-      <div
-        className={`flex h-full border-l bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ${
-          open ? "w-96" : "w-15"
-        }`}
-      >
-        <div className="flex flex-col w-full h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b">
-            <span className="font-semibold text-lg">{open ? "Chat" : ""}</span>
-            <Button
-              className="cursor-pointer"
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen((prev) => !prev)}
-            >
-              {open ? <FiChevronRight /> : <FiChevronLeft />}
-            </Button>
-          </div>
-
-          {/* Chat Messages */}
-          {open && (
-            <div
-              className="flex-1 overflow-y-auto p-3 space-y-2 text-sm relative"
-              ref={messagesContainerRef}
-              onScroll={handleScroll}
-              style={{ maxHeight: "calc(100vh - 120px)" }}
-            >
-              <ChatMessages messages={memoMessages} />
-              <div ref={bottomRef} />
-            </div>
-          )}
-
-          {/* Input Section */}
-          {open && (
-            <div className="p-3 border-t flex flex-col gap-2">
-              <Textarea
-                rows={2}
-                className="resize-none"
-                maxLength={CHARACTER_LIMIT}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message..."
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSend()
-                  }
-                }}
-              />
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {input.length}/{CHARACTER_LIMIT}
-                </span>
-                <Button
-                  size="sm"
-                  className="cursor-pointer"
-                  disabled={
-                    loading || input.length === 0 || input.length > CHARACTER_LIMIT
-                  }
-                  onClick={handleSend}
-                >
-                  <FiSend className="w-4 h-4 mr-1" />
-                  Send
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+  <div className={`z-50 transition-all duration-300
+    sticky top-[64px] md:top-0 right-0 h-screen md:h-screen ${open ? "fixed inset-0 bg-black/50 md:bg-transparent" : ""}`}
+  >
+  <div
+    className={`flex h-full border-l shadow-lg transition-all duration-300 bg-white dark:bg-gray-900 ${open ? "w-full md:w-96" : "w-15"} ${open ? "fixed right-0 h-full z-50" : ""}`}
+  >
+    <div className="flex flex-col w-full h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between p-3 border-b">
+        <span className="font-semibold text-lg">{open ? "Chat" : ""}</span>
+        <Button
+          className="cursor-pointer"
+          variant="ghost"
+          size="icon"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? <FiChevronRight /> : <FiChevronLeft />}
+        </Button>
       </div>
 
-      {/* Scroll to Bottom Button */}
-      {showScrollBtn && open && (
-        <Button
-          variant="secondary"
-          className="fixed bottom-35 right-4 shadow text-xs cursor-pointer"
-          onClick={scrollToBottom}
+      {/* Chat Messages */}
+      {open && (
+        <div
+          className="flex-1 overflow-y-auto p-3 space-y-2 text-sm relative"
+          ref={messagesContainerRef}
+          onScroll={handleScroll}
+          style={{ maxHeight: "calc(100vh - 120px)" }}
         >
-          <FiArrowDown className="mr-1" />
-          Scroll to bottom
-        </Button>
+          <ChatMessages messages={memoMessages} />
+          <div ref={bottomRef} />
+        </div>
+      )}
+
+      {/* Input Section */}
+      {open && (
+        <div className="p-3 border-t flex flex-col gap-2">
+          <Textarea
+            rows={2}
+            className="resize-none"
+            maxLength={CHARACTER_LIMIT}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault()
+                handleSend()
+              }
+            }}
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              {input.length}/{CHARACTER_LIMIT}
+            </span>
+            <Button
+              size="sm"
+              className="cursor-pointer"
+              disabled={loading || input.length === 0 || input.length > CHARACTER_LIMIT}
+              onClick={handleSend}
+            >
+              <FiSend className="w-4 h-4 mr-1" />
+              Send
+            </Button>
+          </div>
+        </div>
       )}
     </div>
+  </div>
+
+  {/* Scroll to Bottom Button */}
+  {showScrollBtn && open && (
+    <Button
+      variant="secondary"
+      className="fixed bottom-24 right-4 shadow text-xs cursor-pointer z-[60]"
+      onClick={scrollToBottom}
+    >
+      <FiArrowDown className="mr-1" />
+      Scroll to bottom
+    </Button>
+  )}
+</div>
+
   )
 }

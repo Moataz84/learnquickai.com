@@ -46,9 +46,18 @@ export async function checkDocument(fileId, fileExtension) {
   const session = await getServerSession(authConfig)
   const id = session?.user?.id
   const user = await Users.findOne({_id: id})
-  const { seconds, cost } = await getUsage(id)
-  if ((!user.active && seconds > 3600) || (!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
-    return {msg: "exceeded"}
+  const { documents, cost } = await getUsage(id)
+  
+  if (cost >= 3.5) {
+    unlinkSync(documentPath)
+    return {msg: "rate-limit"}
+  }
+
+  if (!user.active) {
+    if (documents + 1 > 2 || cost > 0.15) {
+      unlinkSync(documentPath)
+      return {msg: "exceeded"}
+    }
   }
 
   const promptId = v4()

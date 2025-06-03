@@ -22,7 +22,7 @@ export default async function PricingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
 
-          {/* Yearly Plan - Featured First */}
+          {/* Yearly Plan - Show First on Mobile */}
           <div className="border rounded-2xl p-6 bg-card shadow-sm relative dark:bg-gray-800 order-1 md:order-none">
             <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md">
               Save 45%
@@ -45,9 +45,9 @@ export default async function PricingPage() {
               Subscribe Yearly
             </PricingButton>
           </div>
-
+            
           {/* Monthly Plan */}
-          <div className="border rounded-2xl p-6 bg-card shadow-sm dark:bg-gray-800">
+          <div className="border rounded-2xl p-6 bg-card shadow-sm dark:bg-gray-800 order-2 md:order-none">
             <h2 className="text-2xl font-semibold mb-1">Pro Monthly</h2>
             <p className="text-muted-foreground text-sm mb-4">Great for short-term needs</p>
             <div className="text-4xl font-bold mb-4">

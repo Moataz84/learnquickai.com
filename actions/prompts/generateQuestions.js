@@ -29,10 +29,18 @@ export async function generateQuestions(promptId) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
   const user = await Users.findOne({_id: userId})
-  const { cost } = await getUsage(userId)
-  if ((!user.active && cost > 0.2) || (user.active && cost >= 3.5)) {
-    return []
+  const { cost, questions: q } = await getUsage(userId)
+
+  if (cost >= 3.5) {
+    return ["rate-limit"]
   }
+
+  if (!user.active) {
+    if (q + 1 > 5 || cost > 0.15) {
+      return ["exceeded"]
+    }
+  }
+
   const prompt = await getPrompt(promptId)
   const message = `You are an expert tutor generating multiple-choice quiz questions from an educational video **summary**.
 
