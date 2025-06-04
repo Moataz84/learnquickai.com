@@ -39,39 +39,39 @@ export default function LandingPage() {
       logo: "/logos/mac.png"
     },
     {
-      name: "Jamie L.",
-      quote: "Turning videos into notes saved me so much time. Absolutely love it!",
-      major: "Biomedical Engineering",
-      university: "Stanford",
-      logo: "/logos/waterloo.png"
-    },
-    {
-      name: "Morgan K.",
-      quote: "It's like having a tutor in my pocket. The chatbot is incredibly smart.",
-      major: "Physics",
-      university: "Harvard",
+      name: "",
+      quote: "UofT can be overwhelming, especially in Life Sci, but LearnQuickAI helps me stay on top of everything. I use it to summarize lecture recordings and make flashcards—it saves so much time.",
+      major: "Life Sciences Student",
+      university: "University of Toronto",
       logo: "/logos/uoft.png"
     },
     {
-      name: "Riley M.",
-      quote: "Highly recommend this to anyone who learns better visually and interactively.",
-      major: "Mechanical Engineering",
-      university: "University of Toronto",
-      logo: "/logos/western.png"
-    },
-    {
-      name: "Morgan K.",
-      quote: "It's like having a tutor in my pocket. The chatbot is incredibly smart.",
-      major: "Physics",
-      university: "Harvard",
+      name: "",
+      quote: "I’m in Health Sci at Mac, and LearnQuickAI has seriously made studying so much easier. It breaks down lectures into bite-sized pieces, and I use it to prep for almost every quiz or test.",
+      major: "First-Year Health Sciences Student",
+      university: "McMaster University",
       logo: "/logos/mac.png"
     },
     {
-      name: "Riley M.",
-      quote: "Highly recommend this to anyone who learns better visually and interactively.",
-      major: "Mechanical Engineering",
-      university: "University of Toronto",
+      name: "",
+      quote: "Between lectures, labs, and side projects, LearnQuickAI helps me keep up without burning out. I just drop in a video and it gives me clean notes and questions to review with.",
+      major: "Computer Science Student",
+      university: "University of Waterloo",
       logo: "/logos/waterloo.png"
+    },
+    {
+      name: "",
+      quote: "Waterloo’s workload is no joke, but LearnQuickAI makes it manageable. I use it to break down lecture vids and get the key points fast—makes revision way more efficient.",
+      major: "Mechatronics Engineering Student",
+      university: "University of Waterloo",
+      logo: "/logos/waterloo.png"
+    },
+    {
+      name: "",
+      quote: "LearnQuickAI is literally part of my daily routine now. I use it to prep for labs, review lectures, and test myself with auto-generated quizzes. It’s everything I needed in one app.",
+      major: "Medical Sciences Student",
+      university: "Western University",
+      logo: "/logos/western.png"
     }
   ]
 
@@ -119,15 +119,15 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/*<section className="bg-gray-100 dark:bg-gray-800 py-16 px-6">
+      <section className="bg-gray-100 dark:bg-gray-800 py-16 px-6">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12">What learners are saying</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">What students are saying</h2>
           <div className="grid gap-8 sm:grid-cols-2">
             {testimonials.map((t, i) => (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: false, amount: 0.4 }}
                 key={i}
                 className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md transition hover:shadow-lg"
@@ -135,7 +135,7 @@ export default function LandingPage() {
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: i * 0.2 }}
+                  transition={{ duration: 0.4, delay: Math.min(0.5, Math.ceil((i+ 1) / 2) * 0.2) }}
                   viewport={{ once: false }}
                   className="flex items-center gap-4 mb-4"
                 >
@@ -145,7 +145,7 @@ export default function LandingPage() {
                     className="w-12 h-12"
                   />
                   <div>
-                    <p className="font-semibold text-blue-600 dark:text-blue-400">{t.name}</p>
+                    {/*<p className="font-semibold text-blue-600 dark:text-blue-400">{t.name}</p>*/}
                     <p className="text-sm text-gray-500 dark:text-gray-400">{t.major} at {t.university}</p>
                   </div>
                 </motion.div>
@@ -154,7 +154,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>*/}
+      </section>
 
       <section className="py-20 px-6 sm:px-10 md:px-16 bg-white dark:bg-gray-900 text-center">
         <div className="max-w-6xl mx-auto">
@@ -174,7 +174,7 @@ export default function LandingPage() {
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.2, duration: 0.6 }}
+                transition={{ delay: Math.ceil((i+ 1) / 2) * 0.2, duration: 0.6 }}
                 viewport={{ once: false }}
                 className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg"
               >
