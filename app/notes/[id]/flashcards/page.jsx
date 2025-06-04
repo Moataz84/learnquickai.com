@@ -3,21 +3,20 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import MathRender from "@/components/MathRender"
-import { deleteFlashcard, generateQuestions } from "@/actions/prompts/generateQuestions"
+import generateQuestions from "@/actions/prompts/generateQuestions"
+import { deleteFlashcard } from "@/actions/prompts/deleteQuestions"
 import { useQuestions } from "@/contexts/QuestionsContext"
 import { usePrompt } from "@/contexts/PromptContext"
 import shuffle from "@/actions/shuffle"
 import { useRouter } from "next/navigation"
 
 export default function FlashcardPage() {
-  const hasMounted = useRef(false)
   const { prompt } = usePrompt()
   const { questions, setQuestions } = useQuestions()
   const [flashCards, setFlashCards] = useState(shuffle(
-    questions.map((q) => ({
-      id: q.id,
-      question: q.question,
-      answer: q.options.find((a) => a.id === q.answer).text,
+    questions.filter(q => q.flashcardVisable !== false).map(q => ({
+      ...q,
+      answer: q.options.find((a) => a.id === q.answer)?.text
     }))
   ))
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -26,21 +25,18 @@ export default function FlashcardPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isNavigating, setIsNavigating] = useState(false)
   const router = useRouter()
+  const mounted = useRef(false)
 
   useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true
+    if (!mounted.current) {
+      mounted.current = true
       return
     }
-    if (!questions?.length) return
-    const formatted = questions.map((q) => ({
-      id: q.id,
-      question: q.question,
-      answer: q.options.find((a) => a.id === q.answer)?.text,
+    const formatted = questions.filter(q => q.flashcardVisable !== false).map((q) => ({
+      ...q,
+      answer: q.options.find((a) => a.id === q.answer)?.text
     }))
-    setFlashCards(shuffle(formatted))
-    setCurrentIndex(0)
-    setCurrentCard(formatted[0] || null)
+    setFlashCards(formatted)
   }, [questions])
 
   useEffect(() => {
@@ -69,39 +65,12 @@ export default function FlashcardPage() {
     }, 200)
   }
 
-  const replaceFlashcards = async () => {
-    setIsLoading(true)
-    try {
-      const generated = await generateQuestions(prompt.promptId)
-      if (generated[0] === "exceeded") return router.push("/pricing")
-      if (generated[0] === "rate-limit") return router.push("/rate-limit")
-      const formatted = generated.map((q) => ({
-        question: q.question,
-        answer: q.options.find((a) => a.id === q.answer).text,
-      }))
-      setFlashCards(formatted)
-      setQuestions(generated)
-      setCurrentIndex(0)
-      setCurrentCard(formatted[0] || null)
-    } catch (err) {
-      console.error("Failed to generate flashcards", err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const addMoreFlashcards = async () => {
     setIsLoading(true)
     try {
       const generated = await generateQuestions(prompt.promptId)
       if (generated[0] === "exceeded") return router.push("/pricing")
       if (generated[0] === "rate-limit") return router.push("/rate-limit")
-      const formatted = generated.map((q) => ({
-        question: q.question,
-        answer: q.options.find((a) => a.id === q.answer).text,
-      }))
-      const merged = [...flashCards, ...formatted]
-      setFlashCards(merged)
       setQuestions((prev) => [...prev, ...generated])
     } catch (err) {
       console.error("Failed to add flashcards", err)
@@ -111,11 +80,10 @@ export default function FlashcardPage() {
   }
 
   const handleDeleteFlashcard = async () => {
-    const updated = flashCards.filter(i => i.id !== currentCard.id)
-    setFlashCards(updated)
-    setCurrentIndex((prev) =>
-      prev >= updated.length ? Math.max(0, updated.length - 1) : prev
-    )
+    setQuestions([
+      ...questions.filter(q => q.id !== currentCard.id), 
+      {...questions.find(q => q.id === currentCard.id), flashcardVisable: false}
+    ])
     await deleteFlashcard(currentCard.id)
   }
 
@@ -127,7 +95,7 @@ export default function FlashcardPage() {
 
       {!flashCards?.length || !currentCard ? (
         <div className="flex flex-col items-start justify-center space-y-6">
-          <Button onClick={replaceFlashcards} disabled={isLoading} className="cursor-pointer">
+          <Button onClick={addMoreFlashcards} disabled={isLoading} className="cursor-pointer">
             {isLoading ? "Generating..." : "Generate Flashcards"}
           </Button>
           <p className="text-muted-foreground text-base">

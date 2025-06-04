@@ -7,7 +7,7 @@ import MathRender from "@/components/MathRender"
 import shuffle from "@/actions/shuffle"
 
 export default function KahootGame({ gameId, socket, interval }) {
-  const { questions:q } = useQuestions()
+  const { gameQuestions:q } = useQuestions()
   const [questions, setQuestions] = useState(q)
   const session = useSession()
   const [currentQuestion, setCurrentQuestion] = useState(questions[Math.floor(Math.random() * questions.length)])

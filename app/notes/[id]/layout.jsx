@@ -40,7 +40,7 @@ export default async function Layout({ params, children }) {
         <PromptError /> 
       : 
       <PromptProvider initialPrompt={prompt}>
-        <QuestionsProvider promptId={id} initialQuestions={questions}>
+        <QuestionsProvider initialQuestions={questions}>
           <PromptLoader children={children} number={Math.floor(Math.random() * 10)} userMessages={messages} />
         </QuestionsProvider>
       </PromptProvider>

@@ -25,7 +25,7 @@ const questionsSchema = z.object({
   }))
 })
 
-export async function generateQuestions(promptId) {
+export default async function generateQuestions(promptId) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
   const user = await Users.findOne({_id: userId})
@@ -109,12 +109,4 @@ ${prompt.summary}`
     new Usages({userId, dateTime: Date.now().toString(), seconds: 0, promptId, cost: (response.usage.output_tokens * 6.0e-7) + (response.usage.input_tokens * 1.5e-7), type: "questions"}).save()
   ])
   return questions
-}
-
-export async function deleteFlashcard(id) {
-  await Questions.findOneAndUpdate({_id: id}, {$set: {flashcardVisable: false}})
-}
-
-export async function deleteQuestion(id) {
-  await Questions.findOneAndUpdate({_id: id}, {$set: {quizVisable: false}})
 }

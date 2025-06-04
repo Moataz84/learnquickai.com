@@ -99,6 +99,7 @@ export default function ChatSidebar({ userMessages }) {
 
     source.onerror = (err) => {
       setLoading(false)
+      source.close()
     }
   }, [input, loading, prompt.promptId])
 

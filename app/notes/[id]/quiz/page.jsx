@@ -1,6 +1,6 @@
 "use client"
-import { generateQuestions } from "@/actions/prompts/generateQuestions"
-import { deleteQuestion } from "@/actions/prompts/generateQuestions"
+import generateQuestions from "@/actions/prompts/generateQuestions"
+import { deleteQuestion } from "@/actions/prompts/deleteQuestions"
 import { useState, useEffect, useRef } from "react"
 import { FaRegQuestionCircle, FaClipboardList } from "react-icons/fa"
 import MathRender from "@/components/MathRender"
@@ -17,7 +17,7 @@ function shuffleQuestions(questions) {
 export default function QuizPage() {
   const { prompt } = usePrompt()
   const { questions, setQuestions } = useQuestions()
-  const [quizData, setQuizData] = useState(questions.length ? questions : null)
+  const [quizData, setQuizData] = useState(questions.filter(q => q.quizVisable !== false))
   const [isQuizStarted, setIsQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
@@ -39,22 +39,16 @@ export default function QuizPage() {
   }
 
   useEffect(() => {
-    if (questions.length > 0) {
-      setQuizData(questions)
-    }
+    setQuizData(questions.filter(q => q.quizVisable !== false))
   }, [questions])
 
   async function handleGenerateQuestions() {
     setIsLoading(true)
     try {
-      const generatedQuiz = await generateQuestions(prompt.promptId)
-      if (!generatedQuiz.length) {
-        router.push("/pricing")
-      }
-      setQuestions(generatedQuiz)
-      setQuizData(generatedQuiz)
-      setCurrentQuestionIndex(0)
-      setUserAnswers({})
+      const generated = await generateQuestions(prompt.promptId)
+      if (generated[0] === "exceeded") return router.push("/pricing")
+      if (generated[0] === "rate-limit") return router.push("/rate-limit")
+      setQuestions((prev) => [...prev, ...generated])
     } catch (error) {
       console.error("Quiz generation failed", error)
     } finally {
@@ -63,20 +57,11 @@ export default function QuizPage() {
   }
 
   async function handleDeleteQuestion(id) {
-    try {
-      await deleteQuestion(id)
-      const updated = quizData.filter(q => q.id !== id)
-      setQuestions(updated)
-      setQuizData(updated)
-      if (updated.length === 0) {
-        setIsQuizStarted(false)
-        setCurrentQuestionIndex(0)
-      } else if (currentQuestionIndex >= updated.length) {
-        setCurrentQuestionIndex(Math.max(0, updated.length - 1))
-      }
-    } catch (error) {
-      console.error("Failed to delete question", error)
-    }
+    setQuestions([
+      ...questions.filter(q => q.id !== id), 
+      {...questions.find(q => q.id === id), quizVisable: false}
+    ])
+    await deleteQuestion(id)
   }
 
   const handleStartQuiz = () => {

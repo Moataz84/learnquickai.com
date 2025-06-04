@@ -39,7 +39,7 @@ export default function JoinGameContent() {
   }
 
   return (
-    <div className="flex flex-col items-start space-y-4 pt-28 md:pt-12 px-5 md:px-12 pb-12 w-full max-w-3xl">
+    <div className="flex flex-col items-start space-y-4 pt-28 md:pt-12 px-5 md:px-12 pb-12 w-full">
     <WaitingRoom show={waiting} socket={socketRef?.current} gameId={gameId} />
     {!waiting?
       <div className=" shadow-lg rounded-xl p-8 w-full max-w-md text-center space-y-6 dark:bg-gray-800 mx-auto mt-15">

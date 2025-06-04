@@ -54,7 +54,7 @@ export default function WaitingRoom({ socket, show, gameId }) {
   if (!show) return null
 
   return (
-    <div className="space-y-4 max-w-4xl w-full">
+    <div className="space-y-4 max-w-3xl w-full md:mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between font-mono select-text gap-4 sm:gap-10">
         <div className="flex flex-col items-start gap-2">
           <span>Game Code: <b>{gameId}</b></span>
