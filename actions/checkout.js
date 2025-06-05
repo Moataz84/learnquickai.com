@@ -8,6 +8,7 @@ export default async function createCheckout(email, priceId) {
     payment_method_types: ["card"],
     mode: "subscription",
     customer_email: email,
+     allow_promotion_codes: true,
     line_items: [{price: priceId, quantity: 1}],
     success_url: "https://learnquickai.com/dashboard",
     cancel_url: "https://learnquickai.com/pricing"
