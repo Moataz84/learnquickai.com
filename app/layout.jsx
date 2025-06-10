@@ -1,6 +1,6 @@
 import connectDB from "@/utils/db"
 import { cookies } from "next/headers"
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleAnalytics } from "@next/third-parties/google"
 import "@/app/globals.css"
 
 export const metadata = {

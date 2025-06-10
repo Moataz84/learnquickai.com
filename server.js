@@ -136,6 +136,7 @@ app.prepare().then(() => {
     socket.on("disconnecting", () => {
       socket.rooms.forEach(room => {
         if (room !== socket.id) {
+
           const roomSize = io.sockets.adapter.rooms.get(room).size - 1
           if (roomSize === 0) {
             const filePath = join(__dirname, `/temp/game_${room}.json`)
@@ -143,11 +144,12 @@ app.prepare().then(() => {
               return unlinkSync(filePath)
             }
           }
+
           const data = readGameData(room)
+          writeGameData(room, {users: data.users.filter(user => user.id !== socket.userId)})
           if (data.createdBy === socket.userId && !data.started) {
             startGame(room, 5, 7)
           }
-          writeGameData(room, {started: true, users: [...data.users.filter(user => user.id !== socket.userId)]})
           io.to(room).emit("player-joined", io.sockets.adapter.rooms.get(room).size - 1)
         }
       })
