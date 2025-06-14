@@ -114,7 +114,7 @@ export default function QuizPage() {
               disabled={isLoading}
             >
               <FaClipboardList />
-              {isLoading ? "Generating..." : questions.length > 0? "Generate Additional Questions" : "Generate Flashcards"}
+              {isLoading ? "Generating..." : questions.length > 0? "Generate Additional Questions" : "Generate Questions"}
             </Button>
             <Button
               className="cursor-pointer flex items-center gap-2"
