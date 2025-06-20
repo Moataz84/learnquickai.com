@@ -68,7 +68,7 @@ export default function FlashcardPage() {
   const addMoreFlashcards = async () => {
     setIsLoading(true)
     try {
-      const generated = await generateQuestions(prompt.promptId)
+      const generated = await generateQuestions(prompt.promptId, 7)
       if (generated[0] === "exceeded") return router.push("/pricing")
       if (generated[0] === "rate-limit") return router.push("/rate-limit")
       setQuestions((prev) => [...prev, ...generated])
@@ -80,6 +80,9 @@ export default function FlashcardPage() {
   }
 
   const handleDeleteFlashcard = async () => {
+    if (currentIndex + 1 === flashCards.length) {
+      setCurrentIndex(currentIndex - 1)
+    }
     setQuestions([
       ...questions.filter(q => q.id !== currentCard.id), 
       {...questions.find(q => q.id === currentCard.id), flashcardVisable: false}

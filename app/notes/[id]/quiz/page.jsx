@@ -45,7 +45,7 @@ export default function QuizPage() {
   async function handleGenerateQuestions() {
     setIsLoading(true)
     try {
-      const generated = await generateQuestions(prompt.promptId)
+      const generated = await generateQuestions(prompt.promptId, 7)
       if (generated[0] === "exceeded") return router.push("/pricing")
       if (generated[0] === "rate-limit") return router.push("/rate-limit")
       setQuestions((prev) => [...prev, ...generated])
@@ -57,6 +57,9 @@ export default function QuizPage() {
   }
 
   async function handleDeleteQuestion(id) {
+    if (currentQuestionIndex + 1 === quizData.length) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1)
+    }
     setQuestions([
       ...questions.filter(q => q.id !== id), 
       {...questions.find(q => q.id === id), quizVisable: false}
@@ -65,7 +68,7 @@ export default function QuizPage() {
   }
 
   const handleStartQuiz = () => {
-    if (!quizData) return
+    if (!quizData?.length) return
     setQuizData(shuffleQuestions(quizData))
     setIsQuizStarted(true)
     setUserAnswers({})
@@ -114,12 +117,12 @@ export default function QuizPage() {
               disabled={isLoading}
             >
               <FaClipboardList />
-              {isLoading ? "Generating..." : questions.length > 0? "Generate Additional Questions" : "Generate Questions"}
+              {isLoading ? "Generating..." : quizData.length > 0? "Generate Additional Questions" : "Generate Questions"}
             </Button>
             <Button
               className="cursor-pointer flex items-center gap-2"
               onClick={handleStartQuiz}
-              disabled={!quizData || isLoading}
+              disabled={!quizData?.length || isLoading}
             >
               <FaRegQuestionCircle />
               Start Quiz

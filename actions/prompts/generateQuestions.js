@@ -25,7 +25,7 @@ const questionsSchema = z.object({
   }))
 })
 
-export default async function generateQuestions(promptId) {
+export default async function generateQuestions(promptId, level) {
   const session = await getServerSession(authConfig)
   const userId = session?.user?.id
   const user = await Users.findOne({_id: userId})
@@ -36,7 +36,7 @@ export default async function generateQuestions(promptId) {
   }
 
   if (!user.active) {
-    if (q + 1 > 5 || cost > 0.15) {
+    if (q + 1 > 3 || cost > 0.15) {
       return ["exceeded"]
     }
   }
@@ -61,9 +61,11 @@ Your task is to generate 10 high-quality multiple-choice questions **related to 
 - Use LaTeX formatting inside for all mathematical notation
 
 🧠 Vary the difficulty and reasoning depth:
-- Some factual/definition-based
-- Some conceptual
-- Some application-level
+The difficulty level is specified by ${level}, an integer from 1 to 10.
+- As the difficulty level increases:
+- Questions should become more complex and require deeper understanding.
+- They should move beyond direct facts from the summary to more applied, analytical, or multi-step problems.
+- At higher difficulty levels (especially 9-10), include challenging questions that demand critical thinking or synthesis of concepts.
 
 📦 Return exactly 10 questions in this JSON format:
 

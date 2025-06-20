@@ -21,7 +21,8 @@ export default async function signup(name, email, password) {
     verified: false,
     code,
     active: false,
-    credentials: true
+    credentials: true,
+    createdAt: Date.now().toString()
   }).save()
   
   sendEmail(email, "Verify Email", `Your verification code is ${code}.`)

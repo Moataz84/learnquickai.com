@@ -13,7 +13,11 @@ export default function PricingButton({ children, email, active, id, className }
       const url = await createCheckout(email, "price_1RV4VFG2GpyU7y3q1MIu0ygx")
       return redirect(url)
     }
-    const url = await createCheckout(email, "price_1RPR2DG2GpyU7y3qEB6WHIf1")
+    if (id === "month") {
+      const url = await createCheckout(email, "price_1RPR2DG2GpyU7y3qEB6WHIf1")
+      return redirect(url)
+    }
+    const url = await createCheckout(email, "price_1RbD3aG2GpyU7y3qRhDcsSTA")
     redirect(url)
   }
   

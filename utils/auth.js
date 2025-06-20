@@ -37,7 +37,8 @@ export const authConfig = {
             code: "",
             forgotPasswordCode: "",
             active: false,
-            credentials: false
+            credentials: false,
+            createdAt: Date.now().toString()
           }).save()
           token.id = newUser.id
         }

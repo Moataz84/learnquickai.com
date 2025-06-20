@@ -8,7 +8,8 @@ const schema = new Schema({
   code: String,
   forgotPasswordCode: String,
   active: Boolean,
-  credentials: Boolean
+  credentials: Boolean,
+  createdAt: String
 })
 
 const Users = models.users || model("users", schema)

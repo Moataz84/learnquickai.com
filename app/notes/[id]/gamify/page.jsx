@@ -54,7 +54,7 @@ export default function GamePage() {
   async function handleGenerateQuestions() {
     setIsGenerating(true)
     try {
-      const generated = await generateQuestions(prompt.promptId)
+      const generated = await generateQuestions(prompt.promptId, 7)
       if (generated[0] === "exceeded") return router.push("/pricing")
       if (generated[0] === "rate-limit") return router.push("/rate-limit")
       setGameQuestions(prev => {
