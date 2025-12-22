@@ -5,3 +5,4 @@ test/
 package-lock.json
 credentials.txt
 temp/
+run.txt

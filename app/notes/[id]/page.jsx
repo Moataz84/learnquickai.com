@@ -10,7 +10,11 @@ export default function Note() {
     <MathJaxContext>
       <MathJax inline dynamic>
         <div className="custom-html-styles pt-26 md:pt-10 px-10 pb-10">
-          <p className="note-title">{prompt.title}</p>
+          <p className="note-title">
+            <ReactMarkdown>
+              {prompt.title}
+            </ReactMarkdown>
+          </p>
           <ReactMarkdown>
             {prompt.summary}
           </ReactMarkdown>
