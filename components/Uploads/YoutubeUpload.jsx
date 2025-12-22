@@ -21,6 +21,9 @@ export default function YoutubeUpload({isDialogOpen, setIsDialogOpen, setModalEr
       uploadYoutubeVideo(result.promptId, `https://www.youtube.com/watch?v=${result.ytVideoId}`, result.length)
       return router.push(`/notes/${result.promptId}`)
     }
+    else {
+      return setModalError("Video is not available")
+    }
   }
 
   return (
