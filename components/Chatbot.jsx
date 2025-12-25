@@ -126,7 +126,7 @@ export default function ChatSidebar({ userMessages }) {
 
   return (
   <div className={`z-50 transition-all duration-300
-    sticky top-[64px] md:top-0 right-0 h-screen md:h-screen ${open ? "fixed inset-0 bg-black/50 md:bg-transparent" : ""}`}
+    sticky top-[64px] md:top-0 right-0 h-[calc(100vh-64px)] md:h-screen ${open ? "fixed inset-0 bg-black/50 md:bg-transparent" : ""}`}
   >
   <div
     className={`flex h-full border-l shadow-lg transition-all duration-300 bg-white dark:bg-gray-900 ${open ? "w-full md:w-96" : "w-15"} ${open ? "fixed right-0 h-full z-50" : ""}`}
